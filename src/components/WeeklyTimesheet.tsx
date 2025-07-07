@@ -64,6 +64,7 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
   const [customStartDate, setCustomStartDate] = useState<Date>();
   const [customEndDate, setCustomEndDate] = useState<Date>();
   const [colorCodedEnabled, setColorCodedEnabled] = useState(false);
+  const [progressBarColor, setProgressBarColor] = useState('#10b981');
   
   // Filter states
   const [selectedProjects, setSelectedProjects] = useState<Set<string>>(new Set());
@@ -74,8 +75,18 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
   React.useEffect(() => {
     setColorCodedEnabled(isColorCodedProjectsEnabled());
     
+    // Load progress bar color
+    const savedColor = localStorage.getItem('progressbar-color');
+    if (savedColor) {
+      setProgressBarColor(savedColor);
+    }
+    
     const handleStorageChange = () => {
       setColorCodedEnabled(isColorCodedProjectsEnabled());
+      const savedColor = localStorage.getItem('progressbar-color');
+      if (savedColor) {
+        setProgressBarColor(savedColor);
+      }
     };
     
     window.addEventListener('storage', handleStorageChange);
@@ -100,6 +111,31 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
     // Make subproject rows slightly more transparent
     return {
       backgroundColor: baseColor.replace('0.7', '0.5')
+    };
+  };
+
+  // Helper function to check if a date is today
+  const isToday = (date: Date) => {
+    const today = new Date();
+    return date.toDateString() === today.toDateString();
+  };
+
+  // Helper function to get current day highlight style
+  const getCurrentDayStyle = (date: Date) => {
+    if (!isToday(date)) return {};
+    
+    // Convert hex color to rgba with reduced opacity (30-40% of original)
+    const hexToRgba = (hex: string, alpha: number) => {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    };
+    
+    return {
+      backgroundColor: hexToRgba(progressBarColor, 0.15),
+      border: `2px solid ${hexToRgba(progressBarColor, 0.3)}`,
+      boxShadow: `0 0 20px ${hexToRgba(progressBarColor, 0.2)}`
     };
   };
 
@@ -565,24 +601,24 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <Card className="bg-gradient-secondary-modern border-border/60 shadow-modern-lg">
-        <CardHeader className="pb-6">
-          <CardTitle className="flex flex-col space-y-4">
+      <Card className="bg-gradient-secondary-modern border-border/20 shadow-2xl backdrop-blur-xl hover:border-border/40 transition-all duration-500">
+        <CardHeader className="pb-6 border-b border-border/10">
+          <CardTitle className="flex flex-col space-y-6">
             <div className="flex items-center justify-center">
-              <div className="flex items-center gap-4">
-                <Button variant="outline" size="sm" onClick={prevWeek} className="btn-modern shadow-modern-sm">
+              <div className="flex items-center gap-6">
+                <Button variant="outline" size="sm" onClick={prevWeek} className="btn-modern shadow-lg hover:shadow-xl rounded-xl border-border/30">
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-3 text-xl font-bold text-foreground">
-                    <Calendar className="h-6 w-6 text-primary" />
-                    <span className="whitespace-nowrap">{getDisplayTitle()}</span>
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-4 text-2xl font-medium text-foreground">
+                    <Calendar className="h-7 w-7 text-primary" />
+                    <span className="whitespace-nowrap tracking-tight">{getDisplayTitle()}</span>
                   </div>
                   <Select value={selectedRange} onValueChange={handleRangeSelect}>
-                    <SelectTrigger className="w-48 h-11 border-2 border-border shadow-modern-sm focus:shadow-modern-md transition-all duration-200">
+                    <SelectTrigger className="w-52 h-12 border-2 border-border/30 shadow-lg focus:shadow-xl transition-all duration-300 rounded-xl backdrop-blur-sm">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-card border-border/60 shadow-modern-lg">
+                    <SelectContent className="bg-card border-border/40 shadow-2xl backdrop-blur-xl rounded-xl">
                       <SelectItem value="current-week">Current Week</SelectItem>
                       <SelectItem value="this-month">This Month</SelectItem>
                       <SelectItem value="previous-month">Previous Month</SelectItem>
@@ -593,74 +629,80 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
                     </SelectContent>
                   </Select>
                 </div>
-                <Button variant="outline" size="sm" onClick={nextWeek} className="btn-modern shadow-modern-sm">
+                <Button variant="outline" size="sm" onClick={nextWeek} className="btn-modern shadow-lg hover:shadow-xl rounded-xl border-border/30">
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
             </div>
             <div className="text-center">
-              <div className="text-base text-muted-foreground font-medium bg-muted/50 px-4 py-2 rounded-lg inline-block">
+              <div className="text-base text-muted-foreground font-medium bg-muted/30 px-6 py-3 rounded-xl inline-block border border-border/20 shadow-lg backdrop-blur-sm">
                 {weekStart.toLocaleDateString()} - {weekEnd.toLocaleDateString()}
               </div>
             </div>
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3 bg-accent/10 px-4 py-3 rounded-xl">
-                <BarChart3 className="h-6 w-6 text-accent" />
+              <div className="flex items-center gap-4 bg-accent/10 px-6 py-4 rounded-2xl border border-border/20 shadow-lg backdrop-blur-sm">
+                <BarChart3 className="h-7 w-7 text-accent" />
                 <div>
-                  <div className="text-2xl font-bold text-foreground">
+                  <div className="text-3xl font-bold text-foreground tracking-tight">
                     {formatHours(weekTotal)} hrs
                   </div>
                   <div className="text-sm text-muted-foreground font-medium">Total Time</div>
                 </div>
               </div>
-              <div className="flex gap-3">
-                <Button variant="outline" onClick={exportToCSV} className="btn-modern shadow-modern-sm">
+              <div className="flex gap-4">
+                <Button variant="outline" onClick={exportToCSV} className="btn-modern shadow-lg hover:shadow-xl rounded-xl border-border/30">
                   <Download className="h-4 w-4 mr-2" />
                   Export CSV
                 </Button>
-                <Button variant="secondary" onClick={() => setIsDetailedViewOpen(true)} className="btn-modern shadow-modern-sm">
+                <Button variant="secondary" onClick={() => setIsDetailedViewOpen(true)} className="btn-modern shadow-lg hover:shadow-xl rounded-xl">
                   Excel View
                 </Button>
               </div>
             </div>
           </CardTitle>
         </CardHeader>
-        <CardContent className="pt-2">
+        <CardContent className="pt-6">
           {selectedRange === 'current-week' ? (
-            <div className="grid grid-cols-5 gap-4">
+            <div className="grid grid-cols-5 gap-6">
               {days.map(day => (
                 <div key={day.dayName} className="text-center animate-scale-in">
-                  <div className="bg-card rounded-xl p-6 shadow-modern-md hover:shadow-modern-lg transition-all duration-300 border border-border/60 hover:border-primary/30 group">
-                    <div className="font-semibold text-foreground mb-2 text-lg">{day.dayName}</div>
-                    <div className="text-sm text-muted-foreground mb-4 bg-muted/30 px-2 py-1 rounded-md inline-block">
+                  <div 
+                    className="bg-card rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-border/30 hover:border-border/50 group backdrop-blur-sm"
+                    style={getCurrentDayStyle(day.date)}
+                  >
+                    <div className="font-semibold text-foreground mb-3 text-xl tracking-tight">{day.dayName}</div>
+                    <div className="text-sm text-muted-foreground mb-6 bg-muted/20 px-3 py-2 rounded-lg inline-block border border-border/20">
                       {day.date.getDate()}/{day.date.getMonth() + 1}
                     </div>
                     <Button
                       variant="ghost"
-                      className="w-full h-20 flex flex-col items-center justify-center hover:bg-accent/10 rounded-xl transition-all duration-200 group-hover:scale-105"
+                      className="w-full h-24 flex flex-col items-center justify-center hover:bg-accent/10 rounded-2xl transition-all duration-300 group-hover:scale-105"
                       onClick={() => handleDayTimeClick(day.logs)}
                     >
-                      <div className="text-3xl font-bold text-foreground mb-1">
+                      <div className="text-4xl font-bold text-foreground mb-2 tracking-tight">
                         {formatHours(day.totalHours)}
                       </div>
-                      <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide">hours</div>
+                      <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider">hours</div>
                     </Button>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-7 gap-3 max-h-80 overflow-y-auto scroll-modern">
+            <div className="grid grid-cols-7 gap-4 max-h-80 overflow-y-auto scroll-modern">
               {days.map((day, index) => (
                 <div key={index} className="text-center animate-scale-in">
-                  <div className="bg-card rounded-lg p-3 shadow-modern-sm hover:shadow-modern-md transition-all duration-300 border border-border/60 hover:border-primary/30 group">
-                    <div className="font-semibold text-foreground text-sm mb-2">{day.dayName}</div>
+                  <div 
+                    className="bg-card rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 border border-border/30 hover:border-border/50 group backdrop-blur-sm"
+                    style={getCurrentDayStyle(day.date)}
+                  >
+                    <div className="font-semibold text-foreground text-sm mb-3 tracking-tight">{day.dayName}</div>
                     <Button
                       variant="ghost"
-                      className="w-full h-14 flex flex-col items-center justify-center hover:bg-accent/10 rounded-lg transition-all duration-200 group-hover:scale-105"
+                      className="w-full h-16 flex flex-col items-center justify-center hover:bg-accent/10 rounded-xl transition-all duration-200 group-hover:scale-105"
                       onClick={() => handleDayTimeClick(day.logs)}
                     >
-                      <div className="text-xl font-bold text-foreground">
+                      <div className="text-2xl font-bold text-foreground tracking-tight">
                         {formatHours(day.totalHours)}
                       </div>
                       <div className="text-xs text-muted-foreground font-medium">hrs</div>
@@ -675,15 +717,15 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
 
       {/* Excel-like Detailed View Dialog */}
       <Dialog open={isDetailedViewOpen} onOpenChange={setIsDetailedViewOpen}>
-        <DialogContent className="max-w-7xl max-h-[90vh]">
+        <DialogContent className="max-w-7xl max-h-[90vh] rounded-2xl border-border/40 shadow-2xl backdrop-blur-xl">
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <Button variant="outline" size="sm" onClick={prevWeekInExcel}>
+                <Button variant="outline" size="sm" onClick={prevWeekInExcel} className="rounded-xl">
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <span>Weekly Timesheet - Excel View</span>
-                <Button variant="outline" size="sm" onClick={nextWeekInExcel}>
+                <span className="text-xl font-medium tracking-tight">Weekly Timesheet - Excel View</span>
+                <Button variant="outline" size="sm" onClick={nextWeekInExcel} className="rounded-xl">
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
@@ -692,7 +734,7 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
                   variant="outline" 
                   size="sm" 
                   onClick={toggleAllExpansion}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 rounded-xl"
                 >
                   {allExpanded ? <Minimize2 className="h-4 w-4" /> : <Expand className="h-4 w-4" />}
                   {allExpanded ? 'Collapse All' : 'Expand All'}
@@ -701,16 +743,16 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
                   variant="outline" 
                   size="sm" 
                   onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 rounded-xl"
                 >
                   <Filter className="h-4 w-4" />
                   Filters
                 </Button>
-                <Button variant="outline" size="sm" onClick={exportToCSV}>
+                <Button variant="outline" size="sm" onClick={exportToCSV} className="rounded-xl">
                   <Download className="h-4 w-4 mr-2" />
                   Export CSV
                 </Button>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
+                <div className="text-sm text-gray-600 dark:text-gray-400 bg-muted/30 px-3 py-2 rounded-lg">
                   {weekStart.toLocaleDateString()} - {weekEnd.toLocaleDateString()}
                 </div>
               </div>
@@ -719,24 +761,24 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
           
           {/* Filter Panel */}
           {showFilters && (
-            <div className="border-b p-4 bg-gray-50 dark:bg-gray-800">
+            <div className="border-b border-border/30 p-6 bg-muted/20 rounded-xl">
               <div className="space-y-4">
                 <div>
-                  <Label className="text-sm font-medium mb-2 block">Filter by Projects:</Label>
-                  <div className="flex items-center gap-2 mb-3">
-                    <Button size="sm" variant="outline" onClick={selectAllProjects}>
+                  <Label className="text-sm font-medium mb-3 block">Filter by Projects:</Label>
+                  <div className="flex items-center gap-3 mb-4">
+                    <Button size="sm" variant="outline" onClick={selectAllProjects} className="rounded-lg">
                       Select All
                     </Button>
-                    <Button size="sm" variant="outline" onClick={clearProjectFilters}>
+                    <Button size="sm" variant="outline" onClick={clearProjectFilters} className="rounded-lg">
                       Clear All
                     </Button>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-gray-500 bg-muted/30 px-3 py-1 rounded-lg">
                       {selectedProjects.size > 0 ? `${selectedProjects.size} selected` : 'All projects'}
                     </span>
                   </div>
-                  <div className="grid grid-cols-3 gap-2 max-h-32 overflow-y-auto">
+                  <div className="grid grid-cols-3 gap-3 max-h-32 overflow-y-auto scroll-modern">
                     {getAllProjects().map(project => (
-                      <label key={project.id} className="flex items-center space-x-2 text-sm">
+                      <label key={project.id} className="flex items-center space-x-3 text-sm bg-card/50 p-3 rounded-lg border border-border/20">
                         <input
                           type="checkbox"
                           checked={selectedProjects.size === 0 || selectedProjects.has(project.id)}
@@ -753,13 +795,13 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
           )}
           
           <div className="overflow-auto">
-            <table className="w-full border-collapse border border-gray-200 text-sm">
+            <table className="w-full border-collapse border-2 border-border/30 text-sm rounded-xl overflow-hidden shadow-lg">
               <thead>
-                <tr className="bg-gray-100 dark:bg-gray-800">
-                  <th className="border border-gray-200 px-4 py-3 text-left font-medium min-w-[250px]">
+                <tr className="bg-muted/50 backdrop-blur-sm">
+                  <th className="border-2 border-border/30 px-6 py-4 text-left font-semibold min-w-[250px]">
                     <button 
                       onClick={() => handleSort('project')}
-                      className="flex items-center gap-1 hover:text-blue-600"
+                      className="flex items-center gap-2 hover:text-primary transition-colors duration-200"
                     >
                       Project
                       {sortColumn === 'project' && (
@@ -768,10 +810,10 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
                     </button>
                   </th>
                   {days.map(day => (
-                    <th key={day.dayName} className="border border-gray-200 px-4 py-3 text-center font-medium min-w-[80px]">
+                    <th key={day.dayName} className="border-2 border-border/30 px-6 py-4 text-center font-semibold min-w-[80px]">
                       <button 
                         onClick={() => handleSort(day.dayName)}
-                        className="flex items-center gap-1 hover:text-blue-600 mx-auto"
+                        className="flex items-center gap-2 hover:text-primary mx-auto transition-colors duration-200"
                       >
                         {day.dayName}
                         {sortColumn === day.dayName && (
@@ -780,10 +822,10 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
                       </button>
                     </th>
                   ))}
-                  <th className="border border-gray-200 px-4 py-3 text-center font-medium min-w-[80px]">
+                  <th className="border-2 border-border/30 px-6 py-4 text-center font-semibold min-w-[80px]">
                     <button 
                       onClick={() => handleSort('total')}
-                      className="flex items-center gap-1 hover:text-blue-600 mx-auto"
+                      className="flex items-center gap-2 hover:text-primary mx-auto transition-colors duration-200"
                     >
                       Total
                       {sortColumn === 'total' && (
@@ -797,17 +839,17 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
                 {getProjectTimeData().map(project => (
                   <React.Fragment key={project.projectId}>
                     <tr 
-                      className="hover:bg-gray-50 dark:hover:bg-gray-800/50 bg-white dark:bg-gray-900"
+                      className="hover:bg-accent/10 transition-all duration-200 bg-card/50 backdrop-blur-sm"
                       style={getProjectRowStyle(project.projectName)}
                     >
-                      <td className="border border-gray-200 px-4 py-3">
+                      <td className="border-2 border-border/30 px-6 py-4">
                         <button
                           onClick={() => toggleProjectExpansion(project.projectId)}
-                          className="flex items-center gap-2 w-full text-left font-medium text-gray-800 dark:text-gray-200"
+                          className="flex items-center gap-3 w-full text-left font-semibold text-foreground hover:text-primary transition-colors duration-200"
                         >
                           {expandedProjects.has(project.projectId) ? 
-                            <ChevronDown className="h-4 w-4 flex-shrink-0" /> : 
-                            <ChevronRightIcon className="h-4 w-4 flex-shrink-0" />
+                            <ChevronDown className="h-5 w-5 flex-shrink-0" /> : 
+                            <ChevronRightIcon className="h-5 w-5 flex-shrink-0" />
                           }
                           <span className="truncate">{project.projectName}</span>
                         </button>
@@ -816,13 +858,13 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
                         const cellKey = `${project.projectId}-main-${day.dayName}`;
                         const timeData = project.dailyTimes[day.dayName];
                         return (
-                          <td key={day.dayName} className="border border-gray-200 px-2 py-3 text-center bg-white dark:bg-gray-900">
+                          <td key={day.dayName} className="border-2 border-border/30 px-3 py-4 text-center bg-card/30">
                             {editingCell === cellKey ? (
                               <div className="flex items-center gap-1">
                                 <Input
                                   value={editValue}
                                   onChange={(e) => setEditValue(e.target.value)}
-                                  className="w-16 h-8 text-center text-xs"
+                                  className="w-16 h-8 text-center text-xs rounded-lg"
                                   onBlur={() => handleSaveCellEdit(project.projectId, null, day.dayName)}
                                   onKeyDown={(e) => e.key === 'Enter' && handleSaveCellEdit(project.projectId, null, day.dayName)}
                                   autoFocus
@@ -832,13 +874,13 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
                               <div className="group relative">
                                 <button
                                   onClick={() => handleTimeClick(timeData.logs)}
-                                  className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:underline font-mono text-sm"
+                                  className="text-foreground hover:text-primary hover:underline font-mono text-sm transition-colors duration-200"
                                 >
                                   {formatHours(timeData.time)}
                                 </button>
                                 <button
                                   onClick={() => handleCellEdit(project.projectId, null, day.dayName, timeData.time)}
-                                  className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 p-1"
+                                  className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 p-1 hover:bg-accent/20 rounded transition-all duration-200"
                                 >
                                   <Edit className="h-3 w-3" />
                                 </button>
@@ -847,13 +889,13 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
                               <div className="group relative">
                                 <button
                                   onClick={() => handleCellEdit(project.projectId, null, day.dayName, 0)}
-                                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:underline font-mono text-sm w-full"
+                                  className="text-muted-foreground hover:text-foreground hover:underline font-mono text-sm w-full transition-colors duration-200"
                                 >
                                   0.0
                                 </button>
                                 <button
                                   onClick={() => handleCellEdit(project.projectId, null, day.dayName, 0)}
-                                  className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 p-1"
+                                  className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 p-1 hover:bg-accent/20 rounded transition-all duration-200"
                                 >
                                   <Edit className="h-3 w-3" />
                                 </button>
@@ -862,30 +904,30 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
                           </td>
                         );
                       })}
-                      <td className="border border-gray-200 px-4 py-3 text-center font-bold bg-white dark:bg-gray-900">
+                      <td className="border-2 border-border/30 px-6 py-4 text-center font-bold bg-card/30">
                         {formatHours(project.totalTime)}
                       </td>
                     </tr>
                      {expandedProjects.has(project.projectId) && project.subprojects.map(subproject => (
                        <tr 
                          key={subproject.subprojectId} 
-                         className="border-l-4 border-l-gray-500 dark:border-l-gray-400"
+                         className="border-l-4 border-l-primary/50 bg-card/30"
                          style={getSubprojectRowStyle(project.projectName)}
                        >
-                         <td className="border border-gray-200 px-4 py-3 pl-12 text-gray-600 dark:text-gray-400">
+                         <td className="border-2 border-border/30 px-6 py-4 pl-16 text-muted-foreground">
                            <span className="text-sm italic">└ {subproject.subprojectName}</span>
                          </td>
                          {days.map(day => {
                            const cellKey = `${project.projectId}-${subproject.subprojectId}-${day.dayName}`;
                            const timeData = subproject.dailyTimes[day.dayName];
                            return (
-                             <td key={day.dayName} className="border border-gray-200 px-2 py-3 text-center">
+                             <td key={day.dayName} className="border-2 border-border/30 px-3 py-4 text-center">
                                {editingCell === cellKey ? (
                                  <div className="flex items-center gap-1">
                                    <Input
                                      value={editValue}
                                      onChange={(e) => setEditValue(e.target.value)}
-                                     className="w-16 h-8 text-center text-xs"
+                                     className="w-16 h-8 text-center text-xs rounded-lg"
                                      onBlur={() => handleSaveCellEdit(project.projectId, subproject.subprojectId, day.dayName)}
                                      onKeyDown={(e) => e.key === 'Enter' && handleSaveCellEdit(project.projectId, subproject.subprojectId, day.dayName)}
                                      autoFocus
@@ -895,13 +937,13 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
                                  <div className="group relative">
                                    <button
                                      onClick={() => handleTimeClick(timeData.logs)}
-                                     className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:underline font-mono text-sm"
+                                     className="text-muted-foreground hover:text-foreground hover:underline font-mono text-sm transition-colors duration-200"
                                    >
                                      {formatHours(timeData.time)}
                                    </button>
                                    <button
                                      onClick={() => handleCellEdit(project.projectId, subproject.subprojectId, day.dayName, timeData.time)}
-                                     className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 p-1"
+                                     className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 p-1 hover:bg-accent/20 rounded transition-all duration-200"
                                    >
                                      <Edit className="h-3 w-3" />
                                    </button>
@@ -910,13 +952,13 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
                                   <div className="group relative">
                                     <button
                                       onClick={() => handleCellEdit(project.projectId, subproject.subprojectId, day.dayName, 0)}
-                                      className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:underline font-mono text-sm w-full"
+                                      className="text-muted-foreground hover:text-foreground hover:underline font-mono text-sm w-full transition-colors duration-200"
                                     >
                                       0.0
                                     </button>
                                     <button
                                       onClick={() => handleCellEdit(project.projectId, subproject.subprojectId, day.dayName, 0)}
-                                      className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 p-1"
+                                      className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 p-1 hover:bg-accent/20 rounded transition-all duration-200"
                                     >
                                       <Edit className="h-3 w-3" />
                                     </button>
@@ -925,26 +967,26 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
                              </td>
                            );
                          })}
-                        <td className="border border-gray-200 px-4 py-3 text-center font-medium">
+                        <td className="border-2 border-border/30 px-6 py-4 text-center font-medium">
                           {formatHours(subproject.totalTime)}
                         </td>
                       </tr>
                     ))}
                   </React.Fragment>
                 ))}
-                <tr className="bg-gray-200 dark:bg-gray-700 font-bold border-t-2 border-gray-400">
-                  <td className="border border-gray-200 px-4 py-3 text-left font-bold">
+                <tr className="bg-muted/70 font-bold border-t-4 border-primary/30 backdrop-blur-sm">
+                  <td className="border-2 border-border/30 px-6 py-4 text-left font-bold">
                     Total
                   </td>
                   {days.map(day => {
                     const columnTotal = getColumnTotals();
                     return (
-                      <td key={day.dayName} className="border border-gray-200 px-4 py-3 text-center font-bold">
+                      <td key={day.dayName} className="border-2 border-border/30 px-6 py-4 text-center font-bold">
                         {formatHours(columnTotal[day.dayName] || 0)}
                       </td>
                     );
                   })}
-                  <td className="border border-gray-200 px-4 py-3 text-center font-bold">
+                  <td className="border-2 border-border/30 px-6 py-4 text-center font-bold">
                     {formatHours(getColumnTotals().Total)}
                   </td>
                 </tr>
@@ -956,20 +998,20 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
 
       {/* Custom Date Range Dialog */}
       <Dialog open={showCustomRange} onOpenChange={setShowCustomRange}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md rounded-2xl border-border/40 shadow-2xl backdrop-blur-xl">
           <DialogHeader>
-            <DialogTitle className="text-center">Select Custom Date Range</DialogTitle>
+            <DialogTitle className="text-center text-xl font-medium tracking-tight">Select Custom Date Range</DialogTitle>
           </DialogHeader>
           <div className="space-y-6 p-4">
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <Label className="text-sm font-medium">Start Date</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full justify-start text-left font-normal",
+                        "w-full justify-start text-left font-normal rounded-xl",
                         !customStartDate && "text-muted-foreground"
                       )}
                     >
@@ -977,7 +1019,7 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
                       {customStartDate ? format(customStartDate, "PPP") : "Pick start date"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
+                  <PopoverContent className="w-auto p-0 rounded-xl border-border/40 shadow-xl backdrop-blur-xl" align="start">
                     <CalendarComponent
                       mode="single"
                       selected={customStartDate}
@@ -989,14 +1031,14 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
                 </Popover>
               </div>
               
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <Label className="text-sm font-medium">End Date</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full justify-start text-left font-normal",
+                        "w-full justify-start text-left font-normal rounded-xl",
                         !customEndDate && "text-muted-foreground"
                       )}
                     >
@@ -1004,7 +1046,7 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
                       {customEndDate ? format(customEndDate, "PPP") : "Pick end date"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
+                  <PopoverContent className="w-auto p-0 rounded-xl border-border/40 shadow-xl backdrop-blur-xl" align="start">
                     <CalendarComponent
                       mode="single"
                       selected={customEndDate}
@@ -1020,7 +1062,7 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
             <div className="flex gap-3 pt-4">
               <Button 
                 onClick={handleCustomDateRange} 
-                className="flex-1 bg-blue-600 hover:bg-blue-700"
+                className="flex-1 bg-primary hover:bg-primary/90 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
                 disabled={!customStartDate || !customEndDate}
               >
                 Apply Range
@@ -1028,7 +1070,7 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
               <Button 
                 variant="outline" 
                 onClick={() => setShowCustomRange(false)}
-                className="flex-1"
+                className="flex-1 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 Cancel
               </Button>
@@ -1039,34 +1081,34 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
 
       {/* Time Details Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-3xl rounded-2xl border-border/40 shadow-2xl backdrop-blur-xl">
           <DialogHeader>
-            <DialogTitle>Time Entries</DialogTitle>
+            <DialogTitle className="text-xl font-medium tracking-tight">Time Entries</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 max-h-96 overflow-y-auto">
+          <div className="space-y-4 max-h-96 overflow-y-auto scroll-modern">
             {selectedDayLogs.map(log => (
               <div 
                 key={log.id} 
-                className="flex items-center justify-between p-4 border rounded-lg"
+                className="flex items-center justify-between p-6 border border-border/30 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm"
                 style={getProjectRowStyle(log.projectName)}
               >
-                <div className="flex-1 grid grid-cols-2 gap-4">
+                <div className="flex-1 grid grid-cols-2 gap-6">
                   <div>
-                    <div className="font-medium text-lg">{log.projectName}</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">{log.subprojectName}</div>
+                    <div className="font-semibold text-lg text-foreground">{log.projectName}</div>
+                    <div className="text-sm text-muted-foreground">{log.subprojectName}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-gray-500">Time Period</div>
-                    <div className="text-sm">{log.startTime} - {log.endTime}</div>
+                    <div className="text-sm text-muted-foreground">Time Period</div>
+                    <div className="text-sm font-mono bg-muted/30 px-2 py-1 rounded-lg inline-block">{log.startTime} - {log.endTime}</div>
                     {log.description && (
-                      <div className="text-sm text-gray-500 mt-1">
+                      <div className="text-sm text-muted-foreground mt-2 bg-muted/20 p-2 rounded-lg">
                         <strong>Description:</strong> {log.description}
                       </div>
                     )}
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="font-mono text-lg">{formatHours(log.duration)} hrs</div>
+                  <div className="font-mono text-xl font-bold text-foreground bg-accent/20 px-3 py-2 rounded-lg">{formatHours(log.duration)} hrs</div>
                 </div>
               </div>
             ))}

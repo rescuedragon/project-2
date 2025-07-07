@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import ProjectSelector from './ProjectSelector';
@@ -222,7 +221,7 @@ const TimeTracker = () => {
             subprojectId: selectedSubprojectId,
             projectName: currentProject.name,
             subprojectName: currentSubproject.name,
-            elapsedTime: currentElapsedTime,
+            elapsedTime: state.elapsedTime + currentElapsedTime,
             startTime: new Date(state.startTime)
           };
           
@@ -254,10 +253,11 @@ const TimeTracker = () => {
     <div className="relative">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-[650px]">
         {/* Left Panel - Project Selection */}
-        <Card className="h-full shadow-lg border-0 bg-gradient-modern">
-          <CardHeader className="pb-6">
+        <Card className="h-full shadow-2xl border-0 bg-gradient-modern backdrop-blur-xl border border-border/20 hover:border-border/40 transition-all duration-500">
+          <CardHeader className="pb-6 border-b border-border/10">
+            <CardTitle className="text-center text-xl font-medium text-foreground tracking-tight">Project Selection</CardTitle>
           </CardHeader>
-          <CardContent className="h-full pt-0">
+          <CardContent className="h-full pt-6">
             <ProjectSelector
               projects={projects}
               selectedProjectId={selectedProjectId}
@@ -271,11 +271,11 @@ const TimeTracker = () => {
         </Card>
 
         {/* Right Panel - Stopwatch */}
-        <Card className="h-full shadow-lg border-0 bg-gradient-modern">
-          <CardHeader className="pb-6">
-            <CardTitle className="text-center text-lg font-medium text-foreground">Stopwatch</CardTitle>
+        <Card className="h-full shadow-2xl border-0 bg-gradient-modern backdrop-blur-xl border border-border/20 hover:border-border/40 transition-all duration-500">
+          <CardHeader className="pb-6 border-b border-border/10">
+            <CardTitle className="text-center text-xl font-medium text-foreground tracking-tight">Stopwatch</CardTitle>
           </CardHeader>
-          <CardContent className="h-full pt-0">
+          <CardContent className="h-full pt-6">
             <StopwatchPanel
               selectedProject={selectedProject}
               selectedSubproject={selectedSubproject}
