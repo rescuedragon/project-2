@@ -58,15 +58,15 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
 
   if (!enabled) {
     return (
-      <div className="mb-6 p-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl border border-gray-200/80 shadow-xl hover:shadow-2xl transition-all duration-500 animate-fade-in backdrop-blur-sm">
+      <div className="mb-6 p-6 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-2xl border border-gray-200/80 dark:border-gray-700/60 shadow-2xl hover:shadow-2xl transition-all duration-500 animate-fade-in backdrop-blur-sm">
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-sm text-gray-500 font-medium mb-1">Total Time Today</div>
-            <div className="text-4xl font-bold text-gray-800 tracking-tight">{hours} hrs</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">Total Time Today</div>
+            <div className="text-4xl font-bold text-gray-800 dark:text-gray-100 tracking-tight">{hours} hrs</div>
           </div>
           <div className="text-right">
-            <div className="w-20 h-20 rounded-full bg-blue-50/50 flex items-center justify-center border-2 border-blue-100/30">
-              <div className="text-2xl font-bold text-blue-500">{Math.round(parseFloat(hours))}</div>
+            <div className="w-20 h-20 rounded-full bg-blue-50/50 dark:bg-blue-900/30 flex items-center justify-center border-2 border-blue-100/30 dark:border-blue-700/30">
+              <div className="text-2xl font-bold text-blue-500 dark:text-blue-400">{Math.round(parseFloat(hours))}</div>
             </div>
           </div>
         </div>
@@ -75,7 +75,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   }
 
   return (
-    <div className="mb-6 p-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl border border-gray-200/80 shadow-xl hover:shadow-2xl transition-all duration-500 animate-fade-in overflow-hidden relative backdrop-blur-sm h-44">
+    <div className="mb-6 p-6 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-2xl border border-gray-200/80 dark:border-gray-700/60 shadow-2xl hover:shadow-2xl transition-all duration-500 animate-fade-in overflow-hidden relative backdrop-blur-sm h-44">
       {/* Background with subtle wave pattern for the whole area */}
       <div className="absolute inset-0 opacity-10" style={{
         backgroundImage: `url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,30 C20,0 40,40 60,10 C80,40 100,0 100,30 L100,100 L0,100 Z" fill="${encodeURIComponent(color)}"/></svg>')`,
@@ -189,14 +189,14 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
       {/* Content */}
       <div className="relative z-10 h-full flex flex-col justify-between">
         <div>
-          <div className="text-sm text-gray-500 font-medium">Today's Progress</div>
-          <div className="text-4xl font-bold text-gray-800 tracking-tight">{hours} hrs</div>
+          <div className="text-sm text-gray-500 dark:text-gray-400 font-medium">Today's Progress</div>
+          <div className="text-4xl font-bold text-gray-800 dark:text-gray-100 tracking-tight">{hours} hrs</div>
         </div>
         
         <div className="flex justify-between items-end">
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-gray-500 dark:text-gray-400">
           </div>
-          <div className="text-xl font-bold text-gray-700">
+          <div className="text-xl font-bold text-gray-700 dark:text-gray-300">
             {Math.round(progressPercentage)}%
           </div>
         </div>

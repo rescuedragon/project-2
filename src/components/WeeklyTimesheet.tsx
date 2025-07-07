@@ -64,6 +64,7 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
   const [customStartDate, setCustomStartDate] = useState<Date>();
   const [customEndDate, setCustomEndDate] = useState<Date>();
   const [colorCodedEnabled, setColorCodedEnabled] = useState(false);
+  const [progressBarEnabled, setProgressBarEnabled] = useState(false);
   const [progressBarColor, setProgressBarColor] = useState('#10b981');
   
   // Filter states
@@ -75,18 +76,20 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
   React.useEffect(() => {
     setColorCodedEnabled(isColorCodedProjectsEnabled());
     
-    // Load progress bar color
+    // Load progress bar settings
+    const savedEnabled = localStorage.getItem('progressbar-enabled');
     const savedColor = localStorage.getItem('progressbar-color');
-    if (savedColor) {
-      setProgressBarColor(savedColor);
-    }
+    
+    setProgressBarEnabled(savedEnabled ? JSON.parse(savedEnabled) : false);
+    setProgressBarColor(savedColor || '#10b981');
     
     const handleStorageChange = () => {
       setColorCodedEnabled(isColorCodedProjectsEnabled());
+      const savedEnabled = localStorage.getItem('progressbar-enabled');
       const savedColor = localStorage.getItem('progressbar-color');
-      if (savedColor) {
-        setProgressBarColor(savedColor);
-      }
+      
+      setProgressBarEnabled(savedEnabled ? JSON.parse(savedEnabled) : false);
+      setProgressBarColor(savedColor || '#10b981');
     };
     
     window.addEventListener('storage', handleStorageChange);
@@ -122,9 +125,9 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
 
   // Helper function to get current day highlight style
   const getCurrentDayStyle = (date: Date) => {
-    if (!isToday(date)) return {};
+    if (!isToday(date) || !progressBarEnabled) return {};
     
-    // Convert hex color to rgba with reduced opacity (30-40% of original)
+    // Convert hex color to rgba with reduced opacity (15% of original)
     const hexToRgba = (hex: string, alpha: number) => {
       const r = parseInt(hex.slice(1, 3), 16);
       const g = parseInt(hex.slice(3, 5), 16);
@@ -134,8 +137,11 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
     
     return {
       backgroundColor: hexToRgba(progressBarColor, 0.15),
-      border: `2px solid ${hexToRgba(progressBarColor, 0.3)}`,
-      boxShadow: `0 0 20px ${hexToRgba(progressBarColor, 0.2)}`
+      border: `3px solid ${hexToRgba(progressBarColor, 0.4)}`,
+      boxShadow: `0 0 30px ${hexToRgba(progressBarColor, 0.3)}, inset 0 0 20px ${hexToRgba(progressBarColor, 0.1)}`,
+      transform: 'translateY(-2px) scale(1.02)',
+      position: 'relative',
+      zIndex: 10
     };
   };
 

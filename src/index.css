@@ -71,29 +71,30 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 0 0% 9%;
-    --foreground: 0 0% 85%;
+    /* Cred-inspired Dark Theme - Midnight Black with Dark Green Accents */
+    --background: 0 0% 6%;
+    --foreground: 120 5% 85%;
 
-    --card: 0 0% 12%;
-    --card-foreground: 0 0% 85%;
+    --card: 0 0% 8%;
+    --card-foreground: 120 5% 85%;
 
-    --popover: 0 0% 12%;
-    --popover-foreground: 0 0% 85%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 120 5% 85%;
 
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --primary-hover: 0 0% 94%;
+    --primary: 120 15% 25%;
+    --primary-foreground: 0 0% 98%;
+    --primary-hover: 120 15% 30%;
 
-    --secondary: 0 0% 18%;
-    --secondary-foreground: 0 0% 85%;
-    --secondary-hover: 0 0% 22%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 120 5% 85%;
+    --secondary-hover: 0 0% 15%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 120 3% 60%;
 
-    --accent: 0 0% 18%;
-    --accent-foreground: 0 0% 85%;
-    --accent-hover: 0 0% 22%;
+    --accent: 120 10% 15%;
+    --accent-foreground: 120 5% 85%;
+    --accent-hover: 120 10% 18%;
 
     --destructive: 0 85% 60%;
     --destructive-foreground: 0 0% 98%;
@@ -101,33 +102,33 @@ All colors MUST be HSL.
     --warning: 25 95% 53%;
     --warning-foreground: 0 0% 9%;
 
-    --border: 0 0% 22%;
-    --input: 0 0% 18%;
-    --ring: 0 0% 98%;
+    --border: 120 5% 18%;
+    --input: 0 0% 12%;
+    --ring: 120 15% 25%;
 
-    --success: 142 71% 45%;
+    --success: 120 25% 35%;
     --info: 221 83% 53%;
 
-    /* Google Material Design Gradients - Dark Mode */
-    --gradient-primary: linear-gradient(135deg, hsl(0 0% 12%) 0%, hsl(0 0% 10%) 100%);
-    --gradient-secondary: linear-gradient(135deg, hsl(0 0% 15%) 0%, hsl(0 0% 12%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(0 0% 18%) 0%, hsl(0 0% 15%) 100%);
+    /* Cred-inspired Dark Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(0 0% 8%) 0%, hsl(0 0% 6%) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(0 0% 10%) 0%, hsl(0 0% 8%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(120 10% 15%) 0%, hsl(0 0% 10%) 100%);
 
     /* Enhanced shadows for dark mode */
-    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
-    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.5), 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.6), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
 
-    --sidebar-background: 0 0% 10%;
-    --sidebar-foreground: 0 0% 0%;
-    --sidebar-primary: 0 0% 100%;
-    --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 0 0% 15%;
-    --sidebar-accent-foreground: 0 0% 0%;
-    --sidebar-border: 0 0% 20%;
-    --sidebar-ring: 0 0% 100%;
+    --sidebar-background: 0 0% 6%;
+    --sidebar-foreground: 120 5% 85%;
+    --sidebar-primary: 120 15% 25%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 120 10% 15%;
+    --sidebar-accent-foreground: 120 5% 85%;
+    --sidebar-border: 120 5% 18%;
+    --sidebar-ring: 120 15% 25%;
   }
 }
 
@@ -158,15 +159,15 @@ All colors MUST be HSL.
 
   /* Enhanced modern animations */
   .animate-fade-in {
-    animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .animate-slide-up {
-    animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .animate-scale-in {
-    animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .animate-pulse-slow {
@@ -176,7 +177,7 @@ All colors MUST be HSL.
   @keyframes fadeIn {
     from { 
       opacity: 0; 
-      transform: translateY(20px) scale(0.95); 
+      transform: translateY(15px) scale(0.98); 
     }
     to { 
       opacity: 1; 
@@ -187,7 +188,7 @@ All colors MUST be HSL.
   @keyframes slideUp {
     from { 
       opacity: 0; 
-      transform: translateY(40px) scale(0.95); 
+      transform: translateY(30px) scale(0.98); 
     }
     to { 
       opacity: 1; 
@@ -198,7 +199,7 @@ All colors MUST be HSL.
   @keyframes scaleIn {
     from { 
       opacity: 0; 
-      transform: scale(0.9) translateY(10px); 
+      transform: scale(0.95) translateY(8px); 
     }
     to { 
       opacity: 1; 
@@ -319,5 +320,20 @@ All colors MUST be HSL.
   .dark .glass-effect {
     background: rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Dark mode specific enhancements */
+  .dark {
+    /* Disable all animations and color coding in dark mode for clean aesthetic */
+  }
+
+  .dark .animate-fade-in,
+  .dark .animate-slide-up,
+  .dark .animate-scale-in {
+    animation: none;
+  }
+
+  .dark .progress-animated::after {
+    display: none;
   }
 }
