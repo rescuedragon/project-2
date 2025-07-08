@@ -238,10 +238,18 @@ const ExcelView: React.FC = () => {
   };
 
   const exportToCSV = () => {
+    // Get filtered data based on current view
+    const dataToExport = filteredTimeLogs;
+    
+    if (dataToExport.length === 0) {
+      alert('No data to export');
+      return;
+    }
+    
     const headers = ['Date', 'Project', 'Subproject', 'Start Time', 'End Time', 'Duration', 'Description'];
     const csvData = [
       headers.join(','),
-      ...filteredTimeLogs.map(log => [
+      ...dataToExport.map(log => [
         log.date,
         `"${log.projectName}"`,
         `"${log.subprojectName}"`,
@@ -256,7 +264,7 @@ const ExcelView: React.FC = () => {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `timesheet-${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `timesheet-export-${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     window.URL.revokeObjectURL(url);
   };

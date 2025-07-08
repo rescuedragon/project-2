@@ -531,8 +531,52 @@ const Settings: React.FC = () => {
           </TabsContent>
           
           <TabsContent value="manager" className="space-y-4">
-            <div className="text-sm text-muted-foreground">
-              Manager access settings will be implemented here.
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-medium mb-4">Holiday Management</h3>
+                
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Add New Holiday</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        value={newHoliday.name}
+                        onChange={(e) => setNewHoliday({...newHoliday, name: e.target.value})}
+                        placeholder="Holiday name..."
+                      />
+                      <Input
+                        type="date"
+                        value={newHoliday.date}
+                        onChange={(e) => setNewHoliday({...newHoliday, date: e.target.value})}
+                      />
+                      <Button onClick={handleAddHoliday}>
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label>Existing Holidays</Label>
+                    <div className="space-y-2 max-h-60 overflow-y-auto">
+                      {holidays.map(holiday => (
+                        <div key={holiday.id} className="border rounded p-3 flex items-center justify-between">
+                          <div>
+                            <h4 className="font-medium">{holiday.name}</h4>
+                            <p className="text-sm text-muted-foreground">{holiday.date}</p>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteHoliday(holiday.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </TabsContent>
         </Tabs>

@@ -255,7 +255,7 @@ const TimeTracker = () => {
         {/* Left Panel - Project Selection */}
         <Card className="h-full shadow-2xl border-0 bg-gradient-modern backdrop-blur-xl border border-border/20 hover:border-border/40 transition-all duration-500">
           <CardHeader className="pb-6 border-b border-border/10">
-            <CardTitle className="text-center text-xl font-medium text-foreground tracking-tight">Project Selection</CardTitle>
+            <CardTitle className="text-center text-xl font-medium text-foreground tracking-tight">Select Project</CardTitle>
           </CardHeader>
           <CardContent className="h-full pt-6">
             <ProjectSelector
@@ -272,9 +272,6 @@ const TimeTracker = () => {
 
         {/* Right Panel - Stopwatch */}
         <Card className="h-full shadow-2xl border-0 bg-gradient-modern backdrop-blur-xl border border-border/20 hover:border-border/40 transition-all duration-500">
-          <CardHeader className="pb-6 border-b border-border/10">
-            <CardTitle className="text-center text-xl font-medium text-foreground tracking-tight">Stopwatch</CardTitle>
-          </CardHeader>
           <CardContent className="h-full pt-6">
             <StopwatchPanel
               selectedProject={selectedProject}

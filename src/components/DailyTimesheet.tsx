@@ -23,6 +23,7 @@ const DailyTimesheet: React.FC<DailyTimesheetProps> = ({ timeLogs, onSwitchToWee
   const [selectedProjectsFilter, setSelectedProjectsFilter] = useState<Set<string>>(new Set());
   const [selectedSubprojectsFilter, setSelectedSubprojectsFilter] = useState<Set<string>>(new Set());
   const [showProjectFilter, setShowProjectFilter] = useState(false);
+  const [showGroupControls, setShowGroupControls] = useState(false);
 
   useEffect(() => {
     setColorCodedEnabled(isColorCodedProjectsEnabled());
@@ -198,7 +199,7 @@ const DailyTimesheet: React.FC<DailyTimesheetProps> = ({ timeLogs, onSwitchToWee
                   <PopoverTrigger asChild>
                     <Button variant="outline" size="sm" className="btn-modern shadow-lg hover:shadow-xl rounded-xl">
                       <Filter className="h-4 w-4 mr-2" />
-                      Advanced Filter
+                      Filter
                       {(selectedProjectsFilter.size > 0 || selectedSubprojectsFilter.size > 0) && (
                         <span className="ml-2 bg-primary text-primary-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center">
                           {selectedProjectsFilter.size + selectedSubprojectsFilter.size}
