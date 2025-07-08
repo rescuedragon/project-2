@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { ChevronLeft, ChevronRight, Calendar, BarChart3, ChevronDown, ChevronRight as ChevronRightIcon, Edit, Expand, Minimize2, Download, CalendarIcon, Filter, X, Check } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, BarChart3, ChevronDown, ChevronRight as ChevronRightIcon, Edit, Expand, Minimize2, Download, CalendarIcon, Filter, X, Check, Leaf } from 'lucide-react';
 import { TimeLog } from './TimeTracker';
 import DailyTimesheet from './DailyTimesheet';
 import DateRangeSelector from './DateRangeSelector';
@@ -34,6 +34,43 @@ interface ProjectTimeData {
 }
 
 const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTime }) => {
+  // Animation keyframes injection
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    
+    const existingStyle = document.getElementById('texture-animation-keyframes');
+    if (existingStyle) return;
+    
+    const styleTag = document.createElement('style');
+    styleTag.id = 'texture-animation-keyframes';
+    styleTag.textContent = `
+      @keyframes textureAnimation {
+        0% { background-position: 0% 0%; }
+        100% { background-position: 200% 200%; }
+      }
+      @keyframes leavesAnimation {
+        0% { background-position: 0% 0%, 0% 0%; }
+        50% { background-position: 100% 50%, 50% 100%; }
+        100% { background-position: 200% 100%, 100% 200%; }
+      }
+      @keyframes glassReflection {
+        0% { transform: translateX(-100%) rotate(15deg); }
+        100% { transform: translateX(100%) rotate(15deg); }
+      }
+    `;
+    document.head.appendChild(styleTag);
+  }, []);
+
+  // Base64 encoded leaf texture
+  const leafTexture = `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNTAiIGhlaWdodD0iMTUwIiB2aWV3Qm94PSIwIDAgMTUwIDE1MCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBvcGFjaXR5PSIwLjEiPjxwYXRoIGQ9Ik0zOC4wMjkgMTQzLjEyNGMtMy4xNzYtLjI0NC02LjMyMi0uODk4LTkuMjQzLTIuMDM3YTEuNTEgMS41MSAwIDAgMS0uMzY0LS4xMjJjLTEyLjY0My00LjY0Ni0xOC4wODktMTkuODQzLTEyLjI0OC0zNC4wM2MyLjI0LTUuNDYgNi4xMDMtMTEuMDYgMTEuNTQ0LTE2LjU5YTg5LjE4IDg5LjE4IDAgMCAxIDEyLjI5My05LjY5OGM1LjQ0LTQuNDU0IDkuNzYtOC4wMzcgMTIuMzYtMTAuNDI0YzMuODktMy42MTggNi4zMjUtNy4xMjcgNy43NDQtMTAuODk0YzEuNDY0LTMuODg1IDEuODI3LTcuOTU0LjY3LTExLjc2M2EzMy4xIDMzLjEgMCAwIDEtMS4xMDItNS4wMTJjLS4yNDUtMS4yOC0uMzgzLTIuNjA2LS4zODMtMy45NThhMTYuMzkgMTYuMzkgMCAwIDEgLjM1My00LjM0MmMuMzA1LTEuMzgzLjgxNy0yLjY3IDEuNTI0LTMuODI1YTguMTUgOC4xNSAwIDAgMSAzLjIxNC0yLjg1YzEuMjI3LS41ODQgMi42MDQtLjg3IDQuMDc0LS44N2EyMi44MyAyMi44MyAwIDAgMSA0LjQ0OC40NjljMS4zOTUuMzAyIDIuNzUuNzM4IDQuMDIgMS4yODZhMzguODUgMzguODUgMCAwIDEgMy45MzMgMS43ODhjMy4xNCAxLjY0IDYuMDQgMy42NCA4LjYxIDUuOTI0YzYuMDUgNS4zOCAxMS4wMSAxMS45IDE0LjUxIDE5LjA3YTUxLjQzIDUxLjQzIDAgMCAxIDMuMTIgMTEuMDYyYzEuMDkgNS4yNTQuODIgMTAuNzYtLjc4IDE1Ljg0YTE4LjY1IDE4LjY1IDAgMCAxLTIuODQgNS4wN2MtMS4xOCAxLjU2LTIuNzIgMi44OS00LjUyIDMuOTRhMTcuMDQgMTcuMDQgMCAwIDEtNS4xNCAxLjk1Yy0xLjgxLjQ0LTMuNzEuNjItNS41OS41M2EyOC4xIDI4LjEgMCAwIDEtNC4zOS0uNjhjLTEuNDMtLjQ1LTIuNzYtMS4wNi00LjAyLTEuOGExOS45IDE5LjkgMCAwIDEtMy40LTIuNDNjLTEuMDYtLjktMS45NS0xLjk0LTIuNjYtMy4xYTkuMDcgOS4wNyAwIDAgMS0xLjIxLTIuOTljLS4yOC0xLjE2LS4yOC0yLjM3IDAtMy41Mi4xNS0uNTcuNC0xLjEuNzUtMS42YTQuMjYgNC4yNiAwIDAgMSAyLjE4LTEuNjljLjQ4LS4xNS45OS0uMjIgMS41LS4yMmEuNDguNDggMCAwIDEgLjM3LjE0LjU0LjU0IDAgMCAxIC4xMy4zOS4zOC4zOCAwIDAgMS0uMDYuMi42LjYgMCAwIDEtLjE0LjE3bC0uMjEuMTdhNS4xIDUuMSAwIDAgMC0uOTQuODJjLS4yNi4zNS0uNDIuNzUtLjQ4IDEuMTdhMS45IDEuOSAwIDAgMCAuMDYgLjg4Yy4wOS4yNy4yMy41LjQxLjdhMi4zMiAyLjMyIDAgMCAwIDEuNzguNTZjLjUzIDAgMS4wMy0uMTMgMS40OC0uMzZhMy4xIDMuMSAwIDAgMCAxLjE0LTEuMDJjLjI3LS40LjQ0LS44Ni41Mi0xLjM0YTQuNjYgNC42NiAwIDAgMC0uMDktMS44OCA1LjYgNS42IDAgMCAwLS42LTEuNTggNi44IDYuOCAwIDAgMC0xLjA1LTEuMyA3LjYgNy42IDAgMCAxIDIuMTYtLjQ2Yy43IDAgMS4zOC4xOCAxLjk3LjUzYTQuMzQgNC4zNCAwIDAgMSAxLjQ2IDEuNDNjLjM3LjYuNjIgMS4yOC43MiAyLjAyYTUuMDYgNS4wNiAwIDAgMS0uMTkgMi4yIDcuMTYgNy4xNiAwIDAgMS0xLjE0IDIuMjIgOC43IDguNyAwIDAgMS0xLjc3IDEuNzQgOS45IDkuOSAwIDAgMS0yLjI3IDEuMSAxMS40IDExLjQgMCAwIDEtMi42LjUyYy0uODguMDctMS43OC0uMDItMi42NC0uMjhhMTAgMTAgMCAwIDEtMi4zLS44OSA5LjIgOS4yIDAgMCAxLTEuOTQtMS40NCA4LjQgOC40IDAgMCAxLTEuNDgtMS45IDcuNjUgNy42NSAwIDAgMS0xLjAyLTIuMjUgNi42IDYuNiAwIDAgMS0uMzYtMi40YzAtLjg1LjEyLTEuNjkuMzctMi40OWEyMy4yIDIzLjIgMCAwIDEgMy40NC00LjY4YzEuMjYtMS40OSAyLjY0LTIuODkgNC4xMi00LjE3YTU1LjIgNTUuMiAwIDAgMSA0LjY0LTMuMzkgNDAuNSA0MC41IDAgMCAxIDQuODctMi44MyAzMyAzMyAwIDAgMSA0LjkyLTEuOTMgMjQuMzQgMjQuMzQgMCAwIDEgNC43NC0uOTQgMTkuMjQgMTkuMjQgMCAwIDEgNC4zOC4wNiAyMS4wOCAyMS4wOCAwIDAgMSA0LjIyIDEuMDljMS4zNi40NyAyLjYzIDEuMDggMy44IDEuODFhMTIuNjQgMTIuNjQgMCAwIDEgMy4wOCAyLjYyIDExLjYgMTEuNiAwIDAgMSAyLjA1IDMuNzcgMTIuMyAxMi4zIDAgMCAxIC43MiA0LjM3Yy0uMDYgMS40OC0uNDMgMi45Mi0xLjA1IDQuMjZhMTUuMTYgMTUuMTYgMCAwIDEtMi43NyA0LjA0Yy0xLjA4IDEuMDktMi4zNSAyLjAzLTMuNzYgMi43N2ExOC4zIDE4LjMgMCAwIDEtNC41NCAxLjYzYy0xLjU0LjMtMy4xMi40MS00LjcuMzJ6Ii8+PC9nPjwvc3ZnPg==`;
+
+  const hexToRgba = (hex: string, alpha: number): string => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+
   const getCurrentWeekStart = () => {
     const today = new Date();
     const day = today.getDay();
@@ -127,24 +164,48 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
   const getCurrentDayStyle = (date: Date) => {
     if (!isToday(date) || !progressBarEnabled) return {};
     
-    // Convert hex color to rgba with reduced opacity (15% of original)
-    const hexToRgba = (hex: string, alpha: number) => {
-      const r = parseInt(hex.slice(1, 3), 16);
-      const g = parseInt(hex.slice(3, 5), 16);
-      const b = parseInt(hex.slice(5, 7), 16);
-      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-    };
-    
     return {
-      backgroundColor: hexToRgba(progressBarColor, 0.15),
-      border: `3px solid ${hexToRgba(progressBarColor, 0.4)}`,
-      boxShadow: `0 0 30px ${hexToRgba(progressBarColor, 0.3)}, inset 0 0 20px ${hexToRgba(progressBarColor, 0.1)}`,
-      transform: 'translateY(-2px) scale(1.02)',
       position: 'relative',
-      zIndex: 10
+      overflow: 'hidden',
+      backgroundColor: hexToRgba(progressBarColor, 0.25),
+      boxShadow: `
+        inset 0 0 0 1px rgba(255, 255, 255, 0.4),
+        inset 0 0 20px 8px rgba(0, 0, 0, 0.1),
+        inset 0 0 40px 16px ${hexToRgba(progressBarColor, 0.15)}
+      `,
+      '&::before': {
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: `
+          linear-gradient(120deg, 
+            ${hexToRgba(progressBarColor, 0)} 0%, 
+            ${hexToRgba(progressBarColor, 0.4)} 30%, 
+            ${hexToRgba(progressBarColor, 0)} 70%),
+          url(${leafTexture}) 0 0 repeat
+        `,
+        backgroundSize: '200% 200%, 150px 150px',
+        animation: 'leavesAnimation 18s infinite linear, textureAnimation 6s infinite linear',
+        zIndex: -1,
+      },
+      '&::after': {
+        content: '""',
+        position: 'absolute',
+        top: '-50%',
+        left: '-50%',
+        right: '-50%',
+        bottom: '-50%',
+        background: 'linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%)',
+        transform: 'rotate(15deg)',
+        animation: 'glassReflection 6s infinite linear',
+        zIndex: -1,
+      }
     };
   };
-
+  
   const formatHours = (seconds: number) => {
     return (seconds / 3600).toFixed(1);
   };
@@ -673,9 +734,25 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
               {days.map(day => (
                 <div key={day.dayName} className="text-center animate-scale-in">
                   <div 
-                    className="bg-card rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-border/30 hover:border-border/50 group backdrop-blur-sm"
+                    className="bg-card rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-border/30 hover:border-border/50 group backdrop-blur-lg relative overflow-hidden"
                     style={getCurrentDayStyle(day.date)}
                   >
+                    {isToday(day.date) && progressBarEnabled && (
+                      <div 
+                        className="absolute inset-0 -z-10"
+                        style={{
+                          background: `
+                            linear-gradient(120deg, 
+                              ${hexToRgba(progressBarColor, 0)} 0%, 
+                              ${hexToRgba(progressBarColor, 0.4)} 30%, 
+                              ${hexToRgba(progressBarColor, 0)} 70%),
+                            url(${leafTexture}) 0 0 repeat
+                          `,
+                          backgroundSize: '200% 200%, 150px 150px',
+                          animation: 'leavesAnimation 18s infinite linear, textureAnimation 6s infinite linear',
+                        }}
+                      />
+                    )}
                     <div className="font-semibold text-foreground mb-3 text-xl tracking-tight">{day.dayName}</div>
                     <div className="text-sm text-muted-foreground mb-6 bg-muted/20 px-3 py-2 rounded-lg inline-block border border-border/20">
                       {day.date.getDate()}/{day.date.getMonth() + 1}
@@ -699,9 +776,25 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
               {days.map((day, index) => (
                 <div key={index} className="text-center animate-scale-in">
                   <div 
-                    className="bg-card rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 border border-border/30 hover:border-border/50 group backdrop-blur-sm"
+                    className="bg-card rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 border border-border/30 hover:border-border/50 group backdrop-blur-lg relative overflow-hidden"
                     style={getCurrentDayStyle(day.date)}
                   >
+                    {isToday(day.date) && progressBarEnabled && (
+                      <div 
+                        className="absolute inset-0 -z-10"
+                        style={{
+                          background: `
+                            linear-gradient(120deg, 
+                              ${hexToRgba(progressBarColor, 0)} 0%, 
+                              ${hexToRgba(progressBarColor, 0.4)} 30%, 
+                              ${hexToRgba(progressBarColor, 0)} 70%),
+                            url(${leafTexture}) 0 0 repeat
+                          `,
+                          backgroundSize: '200% 200%, 150px 150px',
+                          animation: 'leavesAnimation 18s infinite linear, textureAnimation 6s infinite linear',
+                        }}
+                      />
+                    )}
                     <div className="font-semibold text-foreground text-sm mb-3 tracking-tight">{day.dayName}</div>
                     <Button
                       variant="ghost"
