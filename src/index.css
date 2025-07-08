@@ -72,29 +72,29 @@ All colors MUST be HSL.
 
   .dark {
     /* Cred-inspired Dark Theme - Midnight Black with Dark Green Accents */
-    --background: 0 0% 6%;
-    --foreground: 120 5% 85%;
+    --background: 0 0% 4%;
+    --foreground: 120 8% 88%;
 
-    --card: 0 0% 8%;
-    --card-foreground: 120 5% 85%;
+    --card: 0 0% 6%;
+    --card-foreground: 120 8% 88%;
 
-    --popover: 0 0% 8%;
-    --popover-foreground: 120 5% 85%;
+    --popover: 0 0% 6%;
+    --popover-foreground: 120 8% 88%;
 
-    --primary: 120 15% 25%;
+    --primary: 120 25% 20%;
     --primary-foreground: 0 0% 98%;
-    --primary-hover: 120 15% 30%;
+    --primary-hover: 120 25% 25%;
 
-    --secondary: 0 0% 12%;
-    --secondary-foreground: 120 5% 85%;
-    --secondary-hover: 0 0% 15%;
+    --secondary: 0 0% 8%;
+    --secondary-foreground: 120 8% 88%;
+    --secondary-hover: 0 0% 10%;
 
-    --muted: 0 0% 10%;
-    --muted-foreground: 120 3% 60%;
+    --muted: 0 0% 8%;
+    --muted-foreground: 120 5% 65%;
 
-    --accent: 120 10% 15%;
-    --accent-foreground: 120 5% 85%;
-    --accent-hover: 120 10% 18%;
+    --accent: 120 15% 12%;
+    --accent-foreground: 120 8% 88%;
+    --accent-hover: 120 15% 15%;
 
     --destructive: 0 85% 60%;
     --destructive-foreground: 0 0% 98%;
@@ -102,17 +102,17 @@ All colors MUST be HSL.
     --warning: 25 95% 53%;
     --warning-foreground: 0 0% 9%;
 
-    --border: 120 5% 18%;
-    --input: 0 0% 12%;
-    --ring: 120 15% 25%;
+    --border: 120 8% 15%;
+    --input: 0 0% 8%;
+    --ring: 120 25% 20%;
 
-    --success: 120 25% 35%;
+    --success: 120 30% 25%;
     --info: 221 83% 53%;
 
     /* Cred-inspired Dark Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(0 0% 8%) 0%, hsl(0 0% 6%) 100%);
-    --gradient-secondary: linear-gradient(135deg, hsl(0 0% 10%) 0%, hsl(0 0% 8%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(120 10% 15%) 0%, hsl(0 0% 10%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(0 0% 6%) 0%, hsl(0 0% 4%) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(0 0% 8%) 0%, hsl(0 0% 6%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(120 15% 12%) 0%, hsl(0 0% 8%) 100%);
 
     /* Enhanced shadows for dark mode */
     --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.5), 0 1px 2px 0 rgba(0, 0, 0, 0.3);
@@ -121,14 +121,14 @@ All colors MUST be HSL.
     --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
     --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
 
-    --sidebar-background: 0 0% 6%;
-    --sidebar-foreground: 120 5% 85%;
-    --sidebar-primary: 120 15% 25%;
+    --sidebar-background: 0 0% 4%;
+    --sidebar-foreground: 120 8% 88%;
+    --sidebar-primary: 120 25% 20%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 120 10% 15%;
-    --sidebar-accent-foreground: 120 5% 85%;
-    --sidebar-border: 120 5% 18%;
-    --sidebar-ring: 120 15% 25%;
+    --sidebar-accent: 120 15% 12%;
+    --sidebar-accent-foreground: 120 8% 88%;
+    --sidebar-border: 120 8% 15%;
+    --sidebar-ring: 120 25% 20%;
   }
 }
 
@@ -159,15 +159,15 @@ All colors MUST be HSL.
 
   /* Enhanced modern animations */
   .animate-fade-in {
-    animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .animate-slide-up {
-    animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: slideUp 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .animate-scale-in {
-    animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: scaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .animate-pulse-slow {
@@ -324,16 +324,21 @@ All colors MUST be HSL.
 
   /* Dark mode specific enhancements */
   .dark {
-    /* Disable all animations and color coding in dark mode for clean aesthetic */
+    /* Matte dark theme with reduced animations */
   }
 
   .dark .animate-fade-in,
   .dark .animate-slide-up,
   .dark .animate-scale-in {
-    animation: none;
+    animation-duration: 0.15s;
   }
 
   .dark .progress-animated::after {
     display: none;
+  }
+
+  /* Disable color coding in dark mode */
+  .dark [style*="backgroundColor"] {
+    background-color: transparent !important;
   }
 }
