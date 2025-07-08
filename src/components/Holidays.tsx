@@ -254,10 +254,10 @@ const Holidays: React.FC = () => {
         </CardHeader>
 
         <CardContent className="p-8">
-          <div className="flex flex-col xl:flex-row gap-12">
+          <div className="flex flex-col xl:flex-row gap-8">
             {/* Calendar */}
             <div className="flex-1">
-              <div className="bg-white rounded-3xl border border-gray-200 shadow-xl p-8">
+              <div className="bg-white rounded-3xl border border-gray-200 shadow-xl p-6 w-full">
                 <Calendar
                   mode="single"
                   selected={selectedDate}
@@ -281,7 +281,7 @@ const Holidays: React.FC = () => {
                   classNames={{
                     months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
                     month: "space-y-6",
-                    caption: "flex justify-center pt-2 relative items-center mb-6",
+                    caption: "flex justify-center pt-2 relative items-center mb-8 w-full",
                     caption_label: "text-2xl font-light text-gray-900 tracking-tight",
                     nav: "space-x-1 flex items-center",
                     nav_button: "hidden",
@@ -305,30 +305,6 @@ const Holidays: React.FC = () => {
             
             {/* Sidebar */}
             <div className="w-full xl:w-96 space-y-8">
-              {/* Legend */}
-              <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
-                <h3 className="text-xl font-semibold text-gray-900 mb-6">Legend</h3>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors">
-                    <div className="w-6 h-6 rounded-lg bg-blue-800"></div>
-                    <span className="text-gray-700 font-medium">Current Day</span>
-                  </div>
-                  <div className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors">
-                    <div className="w-6 h-6 rounded-lg bg-red-600"></div>
-                    <span className="text-gray-700 font-medium">Public Holidays</span>
-                  </div>
-                  {showPlannedLeaves && (
-                    <div className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors">
-                      <div className="w-6 h-6 rounded-lg bg-green-800"></div>
-                      <span className="text-gray-700 font-medium">Planned Leaves</span>
-                    </div>
-                  )}
-                  <div className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors">
-                    <div className="w-6 h-6 rounded-lg bg-gray-100 border border-gray-300"></div>
-                    <span className="text-gray-700 font-medium">Weekends</span>
-                  </div>
-                </div>
-              </div>
 
               {/* Action Buttons */}
               <div className="space-y-4">

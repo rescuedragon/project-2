@@ -6,13 +6,23 @@ import TimeTracker from '@/components/TimeTracker';
 import ExcelView from '@/components/ExcelView';
 import Holidays from '@/components/Holidays';
 import Settings from '@/components/Settings';
+import LoginPage from '@/components/LoginPage';
 
 const Index = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    const saved = localStorage.getItem('is-logged-in');
+    return saved ? JSON.parse(saved) : false;
+  });
   const [activeTab, setActiveTab] = useState('tracker');
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem('dark-mode');
     return saved ? JSON.parse(saved) : false;
   });
+
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+    localStorage.setItem('is-logged-in', JSON.stringify(true));
+  };
 
   useEffect(() => {
     localStorage.setItem('dark-mode', JSON.stringify(isDarkMode));
@@ -34,6 +44,10 @@ const Index = () => {
       window.removeEventListener('switchToExcelView', handleSwitchToExcel);
     };
   }, []);
+
+  if (!isLoggedIn) {
+    return <LoginPage onLogin={handleLogin} />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-modern relative">
