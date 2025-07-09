@@ -15,7 +15,6 @@ const Settings: React.FC = () => {
   const [editingProject, setEditingProject] = useState<string | null>(null);
   const [editingSubproject, setEditingSubproject] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
-  const [newHoliday, setNewHoliday] = useState({ name: '', date: '' });
 
   // Progress bar settings
   const [progressBarEnabled, setProgressBarEnabled] = useState(() => {
