@@ -237,9 +237,11 @@ const Settings: React.FC = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm" className="fixed top-4 right-4 z-50">
-          <SettingsIcon className="h-5 w-5" />
-        </Button>
+        <React.Fragment>
+          <Button variant="ghost" size="sm" className="fixed top-4 right-4 z-50">
+            <SettingsIcon className="h-5 w-5" />
+          </Button>
+        </React.Fragment>
       </DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
