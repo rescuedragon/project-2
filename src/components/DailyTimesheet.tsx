@@ -9,6 +9,7 @@ import { generateProjectColor, isColorCodedProjectsEnabled } from '@/lib/project
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import WeeklyTimesheet from './WeeklyTimesheet';
 
 interface DailyTimesheetProps {
   timeLogs: TimeLog[];
@@ -16,6 +17,7 @@ interface DailyTimesheetProps {
 }
 
 const DailyTimesheet: React.FC<DailyTimesheetProps> = ({ timeLogs, onSwitchToWeeklyView }) => {
+  const [activeView, setActiveView] = useState<'daily' | 'weekly'>('daily');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedProject, setSelectedProject] = useState<string>('all');
   const [colorCodedEnabled, setColorCodedEnabled] = useState(false);
@@ -134,6 +136,23 @@ const DailyTimesheet: React.FC<DailyTimesheetProps> = ({ timeLogs, onSwitchToWee
     setSelectedSubprojectsFilter(new Set());
   };
 
+  // Listen for switch to daily view event
+  useEffect(() => {
+    const handleSwitchToDaily = () => {
+      setActiveView('daily');
+    };
+
+    window.addEventListener('switchToDailyView', handleSwitchToDaily);
+    
+    return () => {
+      window.removeEventListener('switchToDailyView', handleSwitchToDaily);
+    };
+  }, []);
+
+  if (activeView === 'weekly') {
+    return <WeeklyTimesheet timeLogs={timeLogs} onUpdateTime={() => {}} />;
+  }
+
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Header with Navigation */}
@@ -144,7 +163,7 @@ const DailyTimesheet: React.FC<DailyTimesheetProps> = ({ timeLogs, onSwitchToWee
               <Calendar className="h-6 w-6 text-primary" />
               <span className="text-xl tracking-tight">Daily View</span>
             </CardTitle>
-            <Button onClick={onSwitchToWeeklyView} variant="secondary" size="sm" className="btn-modern shadow-lg hover:shadow-xl rounded-xl">
+            <Button onClick={() => setActiveView('weekly')} variant="secondary" size="sm" className="btn-modern shadow-lg hover:shadow-xl rounded-xl">
               <FileSpreadsheet className="h-4 w-4 mr-2" />
               Weekly View
             </Button>

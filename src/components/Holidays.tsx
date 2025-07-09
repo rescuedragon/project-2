@@ -42,9 +42,7 @@ const Holidays: React.FC = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [isAddingLeave, setIsAddingLeave] = useState(false);
-  const [isAddingHoliday, setIsAddingHoliday] = useState(false);
   const [newLeave, setNewLeave] = useState({ name: '', employee: '', startDate: '', endDate: '' });
-  const [newHoliday, setNewHoliday] = useState({ name: '', date: '' });
   const [progressBarEnabled, setProgressBarEnabled] = useState(false);
   const [progressBarColor, setProgressBarColor] = useState('#10b981');
 
@@ -140,27 +138,9 @@ const Holidays: React.FC = () => {
     }
   };
 
-  const handleAddHoliday = () => {
-    if (newHoliday.name && newHoliday.date) {
-      const holiday: Holiday = {
-        id: Date.now().toString(),
-        ...newHoliday
-      };
-      const updatedHolidays = [...holidays, holiday];
-      setHolidays(updatedHolidays);
-      setNewHoliday({ name: '', date: '' });
-      setIsAddingHoliday(false);
-    }
-  };
-
   const handleRemovePlannedLeave = (leaveId: string) => {
     const updatedLeaves = plannedLeaves.filter(leave => leave.id !== leaveId);
     setPlannedLeaves(updatedLeaves);
-  };
-
-  const handleRemoveHoliday = (holidayId: string) => {
-    const updatedHolidays = holidays.filter(holiday => holiday.id !== holidayId);
-    setHolidays(updatedHolidays);
   };
 
   const nextMonth = () => {
@@ -254,17 +234,17 @@ const Holidays: React.FC = () => {
         </CardHeader>
 
         <CardContent className="p-8">
-          <div className="flex flex-col xl:flex-row gap-8">
+          <div className="flex flex-col lg:flex-row gap-8">
             {/* Calendar */}
-            <div className="flex-1">
-              <div className="bg-white rounded-3xl border border-gray-200 shadow-xl p-6 w-full">
+            <div className="flex-1 w-full">
+              <div className="bg-white rounded-3xl border border-gray-200 shadow-xl p-6 w-full max-w-none">
                 <Calendar
                   mode="single"
                   selected={selectedDate}
                   onSelect={setSelectedDate}
                   month={currentMonth}
                   onMonthChange={setCurrentMonth}
-                  className="w-full border-0 shadow-none"
+                  className="w-full border-0 shadow-none max-w-none"
                   weekStartsOn={1}
                   modifiers={{
                     holiday: holidayDates,
@@ -285,12 +265,12 @@ const Holidays: React.FC = () => {
                     caption_label: "text-2xl font-light text-gray-900 tracking-tight",
                     nav: "space-x-1 flex items-center",
                     nav_button: "hidden",
-                    table: "w-full border-collapse space-y-2",
+                    table: "w-full border-collapse space-y-2 max-w-none",
                     head_row: "flex mb-4",
-                    head_cell: "text-gray-600 rounded-lg w-16 h-12 font-medium text-sm flex items-center justify-center bg-gray-50",
+                    head_cell: "text-gray-600 rounded-lg flex-1 h-12 font-medium text-sm flex items-center justify-center bg-gray-50 min-w-0",
                     row: "flex w-full mt-3",
-                    cell: "h-16 w-16 text-center text-base p-0 relative flex items-center justify-center",
-                    day: "h-14 w-14 rounded-xl font-medium transition-all duration-200 hover:bg-gray-100 flex items-center justify-center border border-transparent hover:border-gray-200 hover:shadow-sm",
+                    cell: "flex-1 h-16 text-center text-base p-0 relative flex items-center justify-center min-w-0",
+                    day: "w-full h-14 rounded-xl font-medium transition-all duration-200 hover:bg-gray-100 flex items-center justify-center border border-transparent hover:border-gray-200 hover:shadow-sm",
                     day_selected: "bg-blue-600 text-white hover:bg-blue-700 border-blue-600",
                     day_today: "bg-blue-800 text-white hover:bg-blue-900 border-blue-800",
                     day_outside: "text-gray-300 hover:text-gray-400",
@@ -304,114 +284,75 @@ const Holidays: React.FC = () => {
             </div>
             
             {/* Sidebar */}
-            <div className="w-full xl:w-96 space-y-8">
+            <div className="w-full lg:w-96 space-y-8">
 
               {/* Action Buttons */}
-              <div className="space-y-4">
-                <Dialog open={isAddingHoliday} onOpenChange={setIsAddingHoliday}>
-                  <DialogTrigger asChild>
-                    <Button className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl shadow-lg font-medium">
-                      <Plus className="h-5 w-5 mr-2" />
-                      Add Holiday
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px] rounded-2xl">
-                    <DialogHeader>
-                      <DialogTitle className="text-xl font-semibold">Add Public Holiday</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-6 py-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="holiday-name" className="text-sm font-medium">Holiday Name</Label>
-                        <Input
-                          id="holiday-name"
-                          value={newHoliday.name}
-                          onChange={(e) => setNewHoliday({...newHoliday, name: e.target.value})}
-                          placeholder="e.g., Independence Day"
-                          className="rounded-xl border-gray-300"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="holiday-date" className="text-sm font-medium">Date</Label>
-                        <Input
-                          id="holiday-date"
-                          type="date"
-                          value={newHoliday.date}
-                          onChange={(e) => setNewHoliday({...newHoliday, date: e.target.value})}
-                          className="rounded-xl border-gray-300"
-                        />
-                      </div>
-                      <Button 
-                        onClick={handleAddHoliday} 
-                        className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl"
-                      >
-                        Add Holiday
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
 
-                <Dialog open={isAddingLeave} onOpenChange={setIsAddingLeave}>
-                  <DialogTrigger asChild>
-                    <Button className="w-full bg-green-800 hover:bg-green-900 text-white py-3 rounded-xl shadow-lg font-medium">
-                      <Plus className="h-5 w-5 mr-2" />
-                      Add Planned Leave
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px] rounded-2xl">
-                    <DialogHeader>
-                      <DialogTitle className="text-xl font-semibold">Add Planned Leave</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-6 py-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="leave-name" className="text-sm font-medium">Leave Name</Label>
-                        <Input
-                          id="leave-name"
-                          value={newLeave.name}
-                          onChange={(e) => setNewLeave({...newLeave, name: e.target.value})}
-                          placeholder="e.g., Annual Leave"
-                          className="rounded-xl border-gray-300"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="employee" className="text-sm font-medium">Employee</Label>
-                        <Input
-                          id="employee"
-                          value={newLeave.employee}
-                          onChange={(e) => setNewLeave({...newLeave, employee: e.target.value})}
-                          placeholder="Employee name"
-                          className="rounded-xl border-gray-300"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="startDate" className="text-sm font-medium">Start Date</Label>
-                        <Input
-                          id="startDate"
-                          type="date"
-                          value={newLeave.startDate}
-                          onChange={(e) => setNewLeave({...newLeave, startDate: e.target.value})}
-                          className="rounded-xl border-gray-300"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="endDate" className="text-sm font-medium">End Date</Label>
-                        <Input
-                          id="endDate"
-                          type="date"
-                          value={newLeave.endDate}
-                          onChange={(e) => setNewLeave({...newLeave, endDate: e.target.value})}
-                          className="rounded-xl border-gray-300"
-                        />
-                      </div>
-                      <Button 
-                        onClick={handleAddPlannedLeave} 
-                        className="w-full bg-green-800 hover:bg-green-900 text-white py-3 rounded-xl"
-                      >
-                        Add Leave
+              {showPlannedLeaves && (
+                <div className="space-y-4">
+                  <Dialog open={isAddingLeave} onOpenChange={setIsAddingLeave}>
+                    <DialogTrigger asChild>
+                      <Button className="w-full bg-green-800 hover:bg-green-900 text-white py-3 rounded-xl shadow-lg font-medium">
+                        <Plus className="h-5 w-5 mr-2" />
+                        Add Planned Leave
                       </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </div>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px] rounded-2xl">
+                      <DialogHeader>
+                        <DialogTitle className="text-xl font-semibold">Add Planned Leave</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-6 py-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="leave-name" className="text-sm font-medium">Leave Name</Label>
+                          <Input
+                            id="leave-name"
+                            value={newLeave.name}
+                            onChange={(e) => setNewLeave({...newLeave, name: e.target.value})}
+                            placeholder="e.g., Annual Leave"
+                            className="rounded-xl border-gray-300"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="employee" className="text-sm font-medium">Employee</Label>
+                          <Input
+                            id="employee"
+                            value={newLeave.employee}
+                            onChange={(e) => setNewLeave({...newLeave, employee: e.target.value})}
+                            placeholder="Employee name"
+                            className="rounded-xl border-gray-300"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="startDate" className="text-sm font-medium">Start Date</Label>
+                          <Input
+                            id="startDate"
+                            type="date"
+                            value={newLeave.startDate}
+                            onChange={(e) => setNewLeave({...newLeave, startDate: e.target.value})}
+                            className="rounded-xl border-gray-300"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="endDate" className="text-sm font-medium">End Date</Label>
+                          <Input
+                            id="endDate"
+                            type="date"
+                            value={newLeave.endDate}
+                            onChange={(e) => setNewLeave({...newLeave, endDate: e.target.value})}
+                            className="rounded-xl border-gray-300"
+                          />
+                        </div>
+                        <Button 
+                          onClick={handleAddPlannedLeave} 
+                          className="w-full bg-green-800 hover:bg-green-900 text-white py-3 rounded-xl"
+                        >
+                          Add Leave
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              )}
 
               {/* This Month's Holidays */}
               {hasHolidaysThisMonth() && (
@@ -435,14 +376,6 @@ const Holidays: React.FC = () => {
                               {new Date(holiday.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                             </div>
                           </div>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => handleRemoveHoliday(holiday.id)}
-                            className="h-8 w-8 p-0 text-red-600 hover:text-red-800 hover:bg-red-100"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
                         </div>
                       ))}
                   </div>

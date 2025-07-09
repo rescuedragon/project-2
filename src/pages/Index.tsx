@@ -38,10 +38,16 @@ const Index = () => {
       setActiveTab('data');
     };
 
+    const handleSwitchToDaily = () => {
+      setActiveTab('data');
+    };
+
     window.addEventListener('switchToExcelView', handleSwitchToExcel);
+    window.addEventListener('switchToDailyView', handleSwitchToDaily);
     
     return () => {
       window.removeEventListener('switchToExcelView', handleSwitchToExcel);
+      window.removeEventListener('switchToDailyView', handleSwitchToDaily);
     };
   }, []);
 

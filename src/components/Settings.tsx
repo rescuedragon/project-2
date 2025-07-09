@@ -15,6 +15,7 @@ const Settings: React.FC = () => {
   const [editingProject, setEditingProject] = useState<string | null>(null);
   const [editingSubproject, setEditingSubproject] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
+  const [newHoliday, setNewHoliday] = useState({ name: '', date: '' });
 
   // Progress bar settings
   const [progressBarEnabled, setProgressBarEnabled] = useState(() => {
@@ -50,6 +51,25 @@ const Settings: React.FC = () => {
     const saved = localStorage.getItem('timesheet-holidays');
     return saved ? JSON.parse(saved) : [];
   });
+
+  const handleAddHoliday = () => {
+    if (newHoliday.name && newHoliday.date) {
+      const holiday = {
+        id: Date.now().toString(),
+        ...newHoliday
+      };
+      const updatedHolidays = [...holidays, holiday];
+      setHolidays(updatedHolidays);
+      localStorage.setItem('timesheet-holidays', JSON.stringify(updatedHolidays));
+      setNewHoliday({ name: '', date: '' });
+    }
+  };
+
+  const handleRemoveHoliday = (holidayId: string) => {
+    const updatedHolidays = holidays.filter(h => h.id !== holidayId);
+    setHolidays(updatedHolidays);
+    localStorage.setItem('timesheet-holidays', JSON.stringify(updatedHolidays));
+  };
 
   const handleAddProject = () => {
     if (newProjectName.trim()) {
