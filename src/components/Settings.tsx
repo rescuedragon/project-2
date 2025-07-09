@@ -197,15 +197,6 @@ const Settings: React.FC = () => {
     setEditingName('');
   };
 
-  const handleAddHoliday = () => {
-    if (newHoliday.name.trim() && newHoliday.date) {
-      const updatedHolidays = [...holidays, { ...newHoliday, id: Date.now().toString() }];
-      setHolidays(updatedHolidays);
-      localStorage.setItem('timesheet-holidays', JSON.stringify(updatedHolidays));
-      setNewHoliday({ name: '', date: '' });
-    }
-  };
-
   const handleDeleteHoliday = (holidayId: string) => {
     const updatedHolidays = holidays.filter(h => h.id !== holidayId);
     setHolidays(updatedHolidays);
