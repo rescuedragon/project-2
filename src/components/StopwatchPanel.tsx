@@ -8,6 +8,13 @@ import { QueuedProject } from './QueuedProjects';
 import { generateProjectColor } from '@/lib/projectColors';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
+const hexToRgba = (hex: string, alpha: number) => {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
+
 interface StopwatchPanelProps {
   selectedProject: Project | undefined;
   selectedSubproject: Subproject | undefined;
@@ -41,6 +48,7 @@ const StopwatchPanel: React.FC<StopwatchPanelProps> = ({
   const dropRef = useRef<{x: number, y: number, size: number, rippleSize: number, splashing: boolean} | null>(null);
   const auroraTimeRef = useRef(0);
   const lastUpdateRef = useRef<number | null>(null);
+  const [colorCodedEnabled, setColorCodedEnabled] = useState(false);
 
   // Load stopwatch state from localStorage
   useEffect(() => {
@@ -79,6 +87,9 @@ const StopwatchPanel: React.FC<StopwatchPanelProps> = ({
 
   // Update project color when project changes
   useEffect(() => {
+    const savedColorCoded = localStorage.getItem('color-coded-projects-enabled');
+    setColorCodedEnabled(savedColorCoded ? JSON.parse(savedColorCoded) : false);
+    
     if (selectedProject && selectedSubproject) {
       const color = generateProjectColor(selectedProject.name);
       setProjectColor(color);
@@ -96,6 +107,19 @@ const StopwatchPanel: React.FC<StopwatchPanelProps> = ({
         }, 10);
       }
     }
+    
+    const handleStorageChange = () => {
+      const savedColorCoded = localStorage.getItem('color-coded-projects-enabled');
+      setColorCodedEnabled(savedColorCoded ? JSON.parse(savedColorCoded) : false);
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('settings-changed', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('settings-changed', handleStorageChange);
+    };
   }, [selectedProject, selectedSubproject]);
 
   // Update blue tint opacity based on elapsed time
@@ -435,6 +459,16 @@ const StopwatchPanel: React.FC<StopwatchPanelProps> = ({
   const canPauseOrStop = isRunning && startTime;
   const showProjectInfo = selectedProject && selectedSubproject;
 
+  const getProjectInfoStyle = () => {
+    if (!showProjectInfo || !colorCodedEnabled) return {};
+    
+    const baseColor = generateProjectColor(selectedProject.name);
+    return {
+      backgroundColor: baseColor,
+      borderColor: baseColor.replace('0.7', '0.9'),
+      boxShadow: `0 10px 30px ${baseColor.replace('0.7', '0.3')}, 0 4px 10px rgba(0,0,0,0.1)`
+    };
+  };
   return (
     <div className="flex flex-col items-center">
       {/* Project Info Display - No "Stopwatch" text */}
@@ -443,15 +477,7 @@ const StopwatchPanel: React.FC<StopwatchPanelProps> = ({
         className={`text-center space-y-2 px-8 py-6 rounded-2xl border shadow-xl backdrop-blur-lg transition-all duration-300 mx-6 mt-6 mb-8 min-w-[320px] max-w-[480px] truncate ${
           showProjectInfo ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
-        style={{
-          backgroundColor: showProjectInfo ? projectColor : 'transparent',
-          borderColor: showProjectInfo ? projectColor.replace('0.7', '0.9') : 'transparent',
-          boxShadow: showProjectInfo ? 
-            `0 10px 30px ${projectColor.replace('0.7', '0.3')}, 0 4px 10px rgba(0,0,0,0.1)` : 'none',
-          transition: 'opacity 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease',
-          transform: showProjectInfo ? 'translateY(0) scale(1)' : 'translateY(-20px) scale(0.9)',
-          opacity: showProjectInfo ? 1 : 0,
-        }}
+        style={getProjectInfoStyle()}
       >
         {showProjectInfo && (
           <>

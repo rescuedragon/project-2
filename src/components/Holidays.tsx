@@ -228,6 +228,24 @@ const Holidays: React.FC = () => {
         const isSelected = selectedDate && selectedDate.toDateString() === date.toDateString();
         const isWeekendColumn = (gridIndex % 7 === 5) || (gridIndex % 7 === 6);
 
+        const getCurrentDayStyle = () => {
+          if (!isToday || !progressBarEnabled) return {};
+          
+          const hexToRgba = (hex: string, alpha: number) => {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+          };
+          
+          return {
+            backgroundColor: hexToRgba(progressBarColor, 0.3),
+            boxShadow: `0 0 15px ${hexToRgba(progressBarColor, 0.5)}`,
+            border: `2px solid ${progressBarColor}`,
+            transform: 'scale(1.05)'
+          };
+        };
+
         let className = `
           aspect-square flex items-center justify-center cursor-pointer
           border border-black/20 rounded-md
@@ -254,7 +272,11 @@ const Holidays: React.FC = () => {
             key={day}
             onClick={() => handleDateClick(day)}
             className={className}
-            style={{
+            style={isToday ? {
+              ...getCurrentDayStyle(),
+              fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif',
+              fontSize: '1.8rem'
+            } : {
               fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif',
               fontSize: '1.8rem'
             }}
@@ -277,12 +299,26 @@ const Holidays: React.FC = () => {
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
             }}
           >
-            <div className="bg-gray-900 text-white rounded-t-2xl">
+            <div 
+              className="text-white rounded-t-2xl"
+              style={{
+                backgroundColor: progressBarEnabled ? progressBarColor : '#1f2937',
+                background: progressBarEnabled 
+                  ? `linear-gradient(135deg, ${progressBarColor}, ${progressBarColor}dd)` 
+                  : '#1f2937'
+              }}
+            >
               <div className="px-6 py-4">
                 <div className="flex items-center justify-between mb-4">
                   <button
                     onClick={prevMonth}
-                    className="p-2 rounded-full hover:bg-gray-800 transition-colors duration-200 text-white"
+                    className="p-2 rounded-full transition-colors duration-200 text-white"
+                    style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                      ':hover': {
+                        backgroundColor: 'rgba(255, 255, 255, 0.2)'
+                      }
+                    }}
                   >
                     <ChevronLeft size={24} />
                   </button>
@@ -299,15 +335,33 @@ const Holidays: React.FC = () => {
                   
                   <button
                     onClick={nextMonth}
-                    className="p-2 rounded-full hover:bg-gray-800 transition-colors duration-200 text-white"
+                    className="p-2 rounded-full transition-colors duration-200 text-white"
+                    style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                      ':hover': {
+                        backgroundColor: 'rgba(255, 255, 255, 0.2)'
+                      }
+                    }}
                   >
                     <ChevronRight size={24} />
                   </button>
                 </div>
               </div>
 
-              <div className="px-2 pb-2">
-                <div className="grid grid-cols-7 gap-1 bg-gray-900 p-2 rounded-lg">
+              <div 
+                className="px-2 pb-2"
+                style={{
+                  backgroundColor: progressBarEnabled ? progressBarColor : '#1f2937'
+                }}
+              >
+                <div 
+                  className="grid grid-cols-7 gap-1 p-2 rounded-lg"
+                  style={{
+                    backgroundColor: progressBarEnabled 
+                      ? `rgba(255, 255, 255, 0.1)` 
+                      : 'rgba(255, 255, 255, 0.1)'
+                  }}
+                >
                   {daysOfWeek.map((day, index) => (
                     <div
                       key={day}

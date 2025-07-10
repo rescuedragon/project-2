@@ -8,12 +8,8 @@ import { generateProjectColor, isColorCodedProjectsEnabled } from '@/lib/project
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import TimeBreakdown from './TimeBreakdown';
 
 interface WeeklyTimesheetProps {
   timeLogs: TimeLog[];
@@ -41,6 +37,10 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
   const [selectedProjects, setSelectedProjects] = useState<Set<string>>(new Set());
   const [isProjectFilterOpen, setIsProjectFilterOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [timeBreakdownDateRange, setTimeBreakdownDateRange] = useState({
+    start: startOfWeek(new Date(), { weekStartsOn: 1 }),
+    end: endOfWeek(new Date(), { weekStartsOn: 1 })
+  });
 
   useEffect(() => {
     setColorCodedEnabled(isColorCodedProjectsEnabled());
@@ -317,6 +317,7 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
   };
 
   const openTimeBreakdown = () => {
+    setTimeBreakdownDateRange(dateRange);
     setIsModalOpen(true);
   };
 
@@ -546,298 +547,12 @@ const WeeklyTimesheet: React.FC<WeeklyTimesheetProps> = ({ timeLogs, onUpdateTim
             </DialogTitle>
           </DialogHeader>
           
-          <div className="mt-4">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-              <div className="flex items-center gap-4">
-                <Button onClick={goToPreviousWeek} variant="outline" size="sm" className="border border-[#B0B0B0] text-black">
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                  <div className="flex items-center gap-2">
-                    <Label className="text-[#4D4D4D] font-medium">From:</Label>
-                    <input
-                      type="date"
-                      value={format(dateRange.start, 'yyyy-MM-dd')}
-                      onChange={(e) => handleDateRangeChange('start', new Date(e.target.value))}
-                      className="border border-[#B0B0B0] rounded px-2 py-1"
-                    />
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <Label className="text-[#4D4D4D] font-medium">To:</Label>
-                    <input
-                      type="date"
-                      value={format(dateRange.end, 'yyyy-MM-dd')}
-                      onChange={(e) => handleDateRangeChange('end', new Date(e.target.value))}
-                      className="border border-[#B0B0B0] rounded px-2 py-1"
-                    />
-                  </div>
-                </div>
-                
-                <Button onClick={goToNextWeek} variant="outline" size="sm" className="border border-[#B0B0B0] text-black">
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-              
-              <div className="flex items-center gap-4">
-                <Popover open={isProjectFilterOpen} onOpenChange={setIsProjectFilterOpen}>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="border border-[#4D4D4D] text-[#4D4D4D] hover:bg-[#4D4D4D] hover:text-white flex items-center gap-2">
-                      <Filter className="h-4 w-4" />
-                      Filter Projects
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-64 p-4 bg-white border border-[#B0B0B0] shadow-lg">
-                    <div className="space-y-3">
-                      <h4 className="font-bold text-[#4D4D4D] border-b border-[#E0E0E0] pb-2">Select Projects</h4>
-                      <div className="max-h-60 overflow-y-auto">
-                        {uniqueProjects.map(project => (
-                          <div key={project.projectName} className="flex items-center gap-2 py-1">
-                            <Checkbox
-                              id={`project-${project.projectName}`}
-                              checked={selectedProjects.has(project.projectName)}
-                              onCheckedChange={() => toggleProjectSelection(project.projectName)}
-                            />
-                            <Label htmlFor={`project-${project.projectName}`} className="text-[#4D4D4D]">
-                              {project.projectName}
-                            </Label>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="flex justify-end pt-2 border-t border-[#E0E0E0]">
-                        <Button 
-                          size="sm" 
-                          onClick={() => setIsProjectFilterOpen(false)}
-                          className="bg-[#4D4D4D] text-white hover:bg-[#7D7D7D]"
-                        >
-                          Apply
-                        </Button>
-                      </div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-                
-                <Button 
-                  onClick={exportToCSV}
-                  variant="outline" 
-                  className="border border-[#4D4D4D] text-[#4D4D4D] hover:bg-[#4D4D4D] hover:text-white flex items-center gap-2"
-                >
-                  <Download className="h-4 w-4" />
-                  Export CSV
-                </Button>
-                
-                <Button onClick={goToCurrentWeek} className="bg-[#4D4D4D] text-white hover:bg-[#7D7D7D]">
-                  This Week
-                </Button>
-              </div>
-            </div>
-            
-            {uniqueProjects.length === 0 ? (
-              <div className="text-center py-12 text-[#7D7D7D]">
-                <Calendar className="h-16 w-16 mx-auto mb-6 opacity-40" />
-                <p className="text-lg font-medium">No time entries for this period</p>
-                <p className="text-sm mt-2">Start tracking time to see entries here</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="bg-[#F8F8F8] border-b border-t border-[#E0E0E0]">
-                      <th className="text-left py-4 px-4 font-semibold text-[#4D4D4D] border-r border-[#E0E0E0]">Project</th>
-                      <th className="text-left py-4 px-4 font-semibold text-[#4D4D4D] border-r border-[#E0E0E0]">Subproject</th>
-                      {daysInRange.map(day => (
-                        <th 
-                          key={day.toISOString()} 
-                          className={`text-center py-4 px-4 font-semibold text-[#4D4D4D] min-w-[100px] border-r border-[#E0E0E0] ${isToday(day) && progressBarEnabled ? 'bg-opacity-20' : ''}`}
-                          style={getCurrentDayStyle(day)}
-                        >
-                          <div className="font-bold">{format(day, 'EEE')}</div>
-                          <div className="text-xs font-normal text-[#7D7D7D]">{format(day, 'M/d')}</div>
-                        </th>
-                      ))}
-                      <th className="text-center py-4 px-4 font-semibold text-[#4D4D4D]">Total</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {uniqueProjects
-                      .filter(project => selectedProjects.has(project.projectName))
-                      .map(project => (
-                        <React.Fragment key={project.projectName}>
-                          <tr 
-                            className="border-b border-[#F0F0F0] hover:bg-[#F8F8F8] transition-colors"
-                            style={getProjectBackgroundStyle(project.projectName)}
-                          >
-                            <td className="py-4 px-4 font-bold text-[#4D4D4D] border-r border-[#E0E0E0]">
-                              <div className="flex items-center gap-2">
-                                <Button 
-                                  variant="ghost" 
-                                  size="icon" 
-                                  className="h-6 w-6"
-                                  onClick={() => toggleProjectExpand(project.projectName)}
-                                >
-                                  {expandedProjects.has(project.projectName) ? 
-                                    <ChevronDown className="h-4 w-4" /> : 
-                                    <ChevronRight className="h-4 w-4" />
-                                  }
-                                </Button>
-                                <span>{project.projectName}</span>
-                              </div>
-                            </td>
-                            <td className="py-4 px-4 text-[#7D7D7D] border-r border-[#E0E0E0]">Project Total</td>
-                            {daysInRange.map(day => {
-                              const dayTime = getProjectDayTime(project.projectName, day);
-                              const cellKey = `${project.projectName}-${format(day, 'yyyy-MM-dd')}`;
-                              const isEditing = editingCell === cellKey;
-                              
-                              return (
-                                <td 
-                                  key={day.toISOString()} 
-                                  className="py-4 px-4 text-center border-r border-[#E0E0E0]"
-                                >
-                                  {isEditing ? (
-                                    <div className="flex items-center justify-center gap-1">
-                                      <input
-                                        value={editValue}
-                                        onChange={(e) => setEditValue(e.target.value)}
-                                        className="w-16 h-8 text-center text-sm border border-[#B0B0B0] rounded"
-                                        type="number"
-                                        step="0.1"
-                                        autoFocus
-                                      />
-                                      <Button
-                                        size="sm"
-                                        onClick={() => handleSave(project.projectName, null, day)}
-                                        className="h-8 w-8 p-0 bg-[#4D4D4D] text-white"
-                                      >
-                                        <Save className="h-3 w-3" />
-                                      </Button>
-                                      <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        onClick={handleCancel}
-                                        className="h-8 w-8 p-0 text-[#7D7D7D]"
-                                      >
-                                        <X className="h-3 w-3" />
-                                      </Button>
-                                    </div>
-                                  ) : (
-                                    <div 
-                                      className="flex items-center justify-center gap-1 cursor-pointer hover:bg-[#F0F0F0] rounded px-2 py-1 transition-colors"
-                                      onClick={() => handleEdit(project.projectName, null, day)}
-                                    >
-                                      <span className="font-mono text-sm font-medium text-[#4D4D4D]">
-                                        {formatHours(dayTime)}
-                                      </span>
-                                      {dayTime > 0 && (
-                                        <Edit className="h-3 w-3 text-[#7D7D7D] opacity-0 group-hover:opacity-100 transition-opacity" />
-                                      )}
-                                    </div>
-                                  )}
-                                </td>
-                              );
-                            })}
-                            <td className="py-4 px-4 text-center">
-                              <span className="font-mono text-sm font-bold text-[#4D4D4D] bg-[#F0F0F0] px-3 py-1 rounded-lg">
-                                {formatHours(getProjectTotal(project.projectName))}
-                              </span>
-                            </td>
-                          </tr>
-                          
-                          {expandedProjects.has(project.projectName) && 
-                            Array.from(project.subprojects).map(subproject => (
-                              <tr 
-                                key={`${project.projectName}-${subproject}`}
-                                className="border-b border-[#F0F0F0] hover:bg-[#F8F8F8] transition-colors"
-                                style={getProjectBackgroundStyle(project.projectName, true)}
-                              >
-                                <td className="py-4 px-4 pl-10 font-medium text-[#4D4D4D] border-r border-[#E0E0E0]"></td>
-                                <td className="py-4 px-4 text-[#7D7D7D] border-r border-[#E0E0E0]">{subproject}</td>
-                                {daysInRange.map(day => {
-                                  const dayTime = getSubprojectDayTime(project.projectName, subproject, day);
-                                  const cellKey = `${project.projectName}-${subproject}-${format(day, 'yyyy-MM-dd')}`;
-                                  const isEditing = editingCell === cellKey;
-                                  
-                                  return (
-                                    <td 
-                                      key={day.toISOString()} 
-                                      className="py-4 px-4 text-center border-r border-[#E0E0E0]"
-                                    >
-                                      {isEditing ? (
-                                        <div className="flex items-center justify-center gap-1">
-                                          <input
-                                            value={editValue}
-                                            onChange={(e) => setEditValue(e.target.value)}
-                                            className="w-16 h-8 text-center text-sm border border-[#B0B0B0] rounded"
-                                            type="number"
-                                            step="0.1"
-                                            autoFocus
-                                          />
-                                          <Button
-                                            size="sm"
-                                            onClick={() => handleSave(project.projectName, subproject, day)}
-                                            className="h-8 w-8 p-0 bg-[#4D4D4D] text-white"
-                                          >
-                                            <Save className="h-3 w-3" />
-                                          </Button>
-                                          <Button
-                                            size="sm"
-                                            variant="ghost"
-                                            onClick={handleCancel}
-                                            className="h-8 w-8 p-0 text-[#7D7D7D]"
-                                          >
-                                            <X className="h-3 w-3" />
-                                          </Button>
-                                        </div>
-                                      ) : (
-                                        <div 
-                                          className="flex items-center justify-center gap-1 cursor-pointer hover:bg-[#F0F0F0] rounded px-2 py-1 transition-colors"
-                                          onClick={() => handleEdit(project.projectName, subproject, day)}
-                                        >
-                                          <span className="font-mono text-sm font-medium text-[#4D4D4D]">
-                                            {formatHours(dayTime)}
-                                          </span>
-                                          {dayTime > 0 && (
-                                            <Edit className="h-3 w-3 text-[#7D7D7D] opacity-0 group-hover:opacity-100 transition-opacity" />
-                                          )}
-                                        </div>
-                                      )}
-                                    </td>
-                                  );
-                              })}
-                              <td className="py-4 px-4 text-center">
-                                <span className="font-mono text-sm font-bold text-[#4D4D4D] bg-[#F0F0F0] px-3 py-1 rounded-lg">
-                                  {formatHours(getSubprojectTotal(project.projectName, subproject))}
-                                </span>
-                              </td>
-                            </tr>
-                          ))
-                        }
-                      </React.Fragment>
-                    ))}
-                  </tbody>
-                  <tfoot>
-                    <tr className="border-t-2 border-[#4D4D4D] bg-[#F8F8F8]">
-                      <td className="py-4 px-4 font-bold text-[#4D4D4D] border-r border-[#E0E0E0]">Grand Total</td>
-                      <td className="py-4 px-4 border-r border-[#E0E0E0]"></td>
-                      {daysInRange.map(day => (
-                        <td key={day.toISOString()} className="py-4 px-4 text-center border-r border-[#E0E0E0]">
-                          <span className="font-mono text-sm font-bold text-[#4D4D4D] bg-[#F0F0F0] px-3 py-1 rounded-lg">
-                            {formatHours(getDayTotal(day))}
-                          </span>
-                        </td>
-                      ))}
-                      <td className="py-4 px-4 text-center">
-                        <span className="font-mono text-lg font-bold text-[#4D4D4D] bg-[#F0F0F0] px-4 py-2 rounded-lg">
-                          {formatHours(timeLogs.reduce((total, log) => total + log.duration, 0))}
-                        </span>
-                      </td>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-            )}
-          </div>
+          <TimeBreakdown
+            timeLogs={timeLogs}
+            onUpdateTime={onUpdateTime}
+            dateRange={timeBreakdownDateRange}
+            onDateRangeChange={setTimeBreakdownDateRange}
+          />
         </DialogContent>
       </Dialog>
     </div>
