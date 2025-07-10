@@ -254,9 +254,7 @@ const TimeTracker = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-[650px]">
         {/* Left Panel - Project Selection */}
         <Card className="h-full shadow-2xl border-0 bg-gradient-modern backdrop-blur-xl border border-border/20 hover:border-border/40 transition-all duration-500">
-          <CardHeader className="pb-6 border-b border-border/10">
-            <CardTitle className="text-center text-xl font-medium text-foreground tracking-tight">Select Project</CardTitle>
-          </CardHeader>
+          
           <CardContent className="h-full pt-6">
             <ProjectSelector
               projects={projects}
