@@ -228,11 +228,9 @@ const Settings: React.FC = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <React.Fragment>
-          <Button variant="ghost" size="sm" className="fixed top-4 right-4 z-50">
-            <SettingsIcon className="h-5 w-5" />
-          </Button>
-        </React.Fragment>
+        <Button variant="ghost" size="sm" className="p-4 rounded-2xl shadow-2xl hover:shadow-2xl bg-card/90 backdrop-blur-xl border border-border/30 hover:border-border/50 transition-all duration-300">
+          <SettingsIcon className="h-5 w-5" />
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>

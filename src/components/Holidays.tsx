@@ -356,19 +356,16 @@ const Holidays: React.FC = () => {
               >
                 <div 
                   className="grid grid-cols-7 gap-1 p-2 rounded-lg"
-                  style={{
-                    backgroundColor: progressBarEnabled 
-                      ? `rgba(255, 255, 255, 0.1)` 
-                      : 'rgba(255, 255, 255, 0.1)'
-                  }}
+                  style={{ backgroundColor: '#1a1a1a' }}
                 >
                   {daysOfWeek.map((day, index) => (
                     <div
                       key={day}
-                      className="text-center py-2 font-bold text-white"
+                      className="text-center py-2 font-bold text-white bg-black rounded-md"
                       style={{
                         fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif',
-                        fontSize: '1.0rem'
+                        fontSize: '1.0rem',
+                        backgroundColor: '#000000'
                       }}
                     >
                       {day}
