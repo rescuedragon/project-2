@@ -1,22 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Download, FileSpreadsheet, Calendar, Edit, Save, X, Trash2, Plus } from 'lucide-react';
+import { Calendar, FileSpreadsheet } from 'lucide-react';
 import ProgressBar from './ProgressBar';
 import { TimeLog } from './TimeTracker';
 import WeeklyTimesheet from './WeeklyTimesheet';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { generateProjectColor, isColorCodedProjectsEnabled } from '@/lib/projectColors';
+import ExcelViewHeader from './excel-view/ExcelViewHeader';
+import TimeEntryTable from './excel-view/TimeEntryTable';
+import EditLogDialog from './excel-view/EditLogDialog';
+import AddEntryDialog from './excel-view/AddEntryDialog';
 
 const ExcelView: React.FC = () => {
   const [timeLogs, setTimeLogs] = useState<TimeLog[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
-  const [editingLogId, setEditingLogId] = useState<string | null>(null);
   const [editingLog, setEditingLog] = useState<TimeLog | null>(null);
   const [editFormData, setEditFormData] = useState({
     duration: '',
@@ -299,270 +296,47 @@ const ExcelView: React.FC = () => {
         
         <TabsContent value="detailed">
           <Card className="bg-gradient-to-br from-slate-50 to-gray-50 dark:from-slate-900 dark:to-gray-900">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <FileSpreadsheet className="h-5 w-5" />
-                  Time Entries
-                </div>
-                <Button onClick={exportToCSV} variant="outline" size="sm" className="hover:bg-blue-50 dark:hover:bg-blue-900">
-                  <Download className="h-4 w-4 mr-2" />
-                  Export CSV
-                </Button>
-              </CardTitle>
-            </CardHeader>
+            <ExcelViewHeader onExportToCSV={exportToCSV} />
             <CardContent>
-              <div className="space-y-6">
-                {groupedLogs.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                    No time entries yet. Start tracking time to see data here.
-                  </div>
-                ) : (
-                  groupedLogs.map(dayGroup => (
-                    <div key={dayGroup.date} className="border rounded-lg p-4 bg-white dark:bg-gray-800">
-                      <div className="flex items-center justify-between mb-4 pb-2 border-b">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                          {dayGroup.displayDate}
-                        </h3>
-                        <div className="flex items-center gap-4">
-                          <Button 
-                            onClick={() => setIsAddEntryOpen(true)}
-                            size="sm"
-                            variant="outline"
-                            className="flex items-center gap-2"
-                          >
-                            <Plus className="h-4 w-4" />
-                            Add entry
-                          </Button>
-                          <div className="text-right">
-                            <div className="text-sm text-gray-500">Daily Total</div>
-                            <div className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                              {formatHours(dayGroup.totalHours)} hrs
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="overflow-x-auto">
-                        <table className="w-full border-collapse border-2 border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
-                          <thead>
-                            <tr className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900">
-                              <th className="border-2 border-gray-300 dark:border-gray-600 px-3 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Project</th>
-                              <th className="border-2 border-gray-300 dark:border-gray-600 px-3 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Subproject</th>
-                              <th className="border-2 border-gray-300 dark:border-gray-600 px-3 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Start</th>
-                              <th className="border-2 border-gray-300 dark:border-gray-600 px-3 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">End</th>
-                              <th className="border-2 border-gray-300 dark:border-gray-600 px-3 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Duration (hrs)</th>
-                              <th className="border-2 border-gray-300 dark:border-gray-600 px-3 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Description</th>
-                              <th className="border-2 border-gray-300 dark:border-gray-600 px-3 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">Actions</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {dayGroup.logs
-                              .sort((a, b) => a.startTime.localeCompare(b.startTime))
-                              .map(log => (
-                                <tr 
-                                  key={log.id} 
-                                  className="hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
-                                  style={getRowBackgroundStyle(log.projectName)}
-                                >
-                                   <td className="border-2 border-gray-300 dark:border-gray-600 px-3 py-2 text-sm font-medium text-gray-900 dark:text-gray-100">{log.projectName}</td>
-                                   <td className="border-2 border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-gray-700 dark:text-gray-300">{log.subprojectName}</td>
-                                   <td className="border-2 border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-gray-700 dark:text-gray-300">{log.startTime}</td>
-                                   <td className="border-2 border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-gray-700 dark:text-gray-300">{log.endTime}</td>
-                                   <td className="border-2 border-gray-300 dark:border-gray-600 px-3 py-2 text-sm">
-                                     <span className="font-mono font-bold text-green-700 dark:text-green-400">
-                                       {formatHours(log.duration)}
-                                     </span>
-                                   </td>
-                                   <td className="border-2 border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-gray-700 dark:text-gray-300">{log.description || '-'}</td>
-                                    <td className="border-2 border-gray-300 dark:border-gray-600 px-3 py-2 text-sm">
-                                     <div className="flex gap-1">
-                                       <Button
-                                         onClick={() => handleEditLog(log)}
-                                         size="sm"
-                                         variant="ghost"
-                                         className="h-6 w-6 p-0"
-                                       >
-                                         <Edit className="h-3 w-3" />
-                                       </Button>
-                                       <Button
-                                         onClick={() => handleDeleteLog(log.id)}
-                                         size="sm"
-                                         variant="ghost"
-                                         className="h-6 w-6 p-0 text-red-600 hover:text-red-800"
-                                       >
-                                         <Trash2 className="h-3 w-3" />
-                                       </Button>
-                                     </div>
-                                   </td>
-                                </tr>
-                              ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
+              {Object.keys(groupedLogs).length === 0 ? (
+                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                  No time entries yet. Start tracking time to see data here.
+                </div>
+              ) : (
+                <TimeEntryTable
+                  groupedLogs={groupedLogs.reduce((acc, group) => {
+                    acc[group.date] = group;
+                    return acc;
+                  }, {} as any)}
+                  colorCodedEnabled={colorCodedEnabled}
+                  formatHours={formatHours}
+                  getRowBackgroundStyle={getRowBackgroundStyle}
+                  onEditLog={handleEditLog}
+                  onDeleteLog={handleDeleteLog}
+                  onAddEntry={() => setIsAddEntryOpen(true)}
+                />
+              )}
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
 
-      {/* Edit Log Dialog */}
-      <Dialog open={!!editingLog} onOpenChange={() => setEditingLog(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Time Entry</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label>Duration (hours)</Label>
-              <Input
-                value={editFormData.duration}
-                onChange={(e) => setEditFormData({...editFormData, duration: e.target.value})}
-                placeholder="e.g., 2.5"
-                type="number"
-                step="0.1"
-              />
-            </div>
-            <div>
-              <Label>Start Time</Label>
-              <Input
-                value={editFormData.startTime}
-                onChange={(e) => setEditFormData({...editFormData, startTime: e.target.value})}
-                placeholder="e.g., 09:00:00"
-              />
-            </div>
-            <div>
-              <Label>End Time</Label>
-              <Input
-                value={editFormData.endTime}
-                onChange={(e) => setEditFormData({...editFormData, endTime: e.target.value})}
-                placeholder="e.g., 11:30:00"
-              />
-            </div>
-            <div>
-              <Label>Description</Label>
-              <Textarea
-                value={editFormData.description}
-                onChange={(e) => setEditFormData({...editFormData, description: e.target.value})}
-                placeholder="What did you work on?"
-                rows={3}
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button onClick={handleSaveEdit} className="flex-1">
-                Save Changes
-              </Button>
-              <Button variant="outline" onClick={() => setEditingLog(null)}>
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <EditLogDialog
+        editingLog={editingLog}
+        editFormData={editFormData}
+        onEditFormDataChange={setEditFormData}
+        onSaveEdit={handleSaveEdit}
+        onCancel={() => setEditingLog(null)}
+      />
 
-      {/* Add Entry Dialog */}
-      <Dialog open={isAddEntryOpen} onOpenChange={setIsAddEntryOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add Time Entry</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label>Project</Label>
-              <Select 
-                value={addFormData.projectId} 
-                onValueChange={(value) => setAddFormData({...addFormData, projectId: value, subprojectId: ''})}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select project" />
-                </SelectTrigger>
-                <SelectContent>
-                  {projects.map(project => (
-                    <SelectItem key={project.id} value={project.id}>
-                      {project.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>Subproject</Label>
-              <Select 
-                value={addFormData.subprojectId} 
-                onValueChange={(value) => setAddFormData({...addFormData, subprojectId: value})}
-                disabled={!addFormData.projectId}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select subproject" />
-                </SelectTrigger>
-                <SelectContent>
-                  {projects
-                    .find(p => p.id === addFormData.projectId)
-                    ?.subprojects.map((sub: any) => (
-                      <SelectItem key={sub.id} value={sub.id}>
-                        {sub.name}
-                      </SelectItem>
-                    )) || []}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>Date</Label>
-              <Input
-                type="date"
-                value={addFormData.date}
-                onChange={(e) => setAddFormData({...addFormData, date: e.target.value})}
-              />
-            </div>
-            <div>
-              <Label>Duration (hours)</Label>
-              <Input
-                value={addFormData.duration}
-                onChange={(e) => setAddFormData({...addFormData, duration: e.target.value})}
-                placeholder="e.g., 2.5"
-                type="number"
-                step="0.1"
-              />
-            </div>
-            <div>
-              <Label>Start Time</Label>
-              <Input
-                value={addFormData.startTime}
-                onChange={(e) => setAddFormData({...addFormData, startTime: e.target.value})}
-                placeholder="e.g., 09:00:00"
-              />
-            </div>
-            <div>
-              <Label>End Time</Label>
-              <Input
-                value={addFormData.endTime}
-                onChange={(e) => setAddFormData({...addFormData, endTime: e.target.value})}
-                placeholder="e.g., 11:30:00"
-              />
-            </div>
-            <div>
-              <Label>Description (optional)</Label>
-              <Textarea
-                value={addFormData.description}
-                onChange={(e) => setAddFormData({...addFormData, description: e.target.value})}
-                placeholder="What did you work on?"
-                rows={3}
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button onClick={handleAddEntry} className="flex-1">
-                Add Entry
-              </Button>
-              <Button variant="outline" onClick={() => setIsAddEntryOpen(false)}>
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <AddEntryDialog
+        isOpen={isAddEntryOpen}
+        projects={projects}
+        addFormData={addFormData}
+        onAddFormDataChange={setAddFormData}
+        onAddEntry={handleAddEntry}
+        onCancel={() => setIsAddEntryOpen(false)}
+      />
     </div>
   );
 };
