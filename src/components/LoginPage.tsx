@@ -36,33 +36,55 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
   };
 
   return (
-    <div 
-      className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-200 flex flex-col items-center justify-center p-8 relative"
-      style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.15'%3E%3Cpath d='M50 50c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10zM10 10c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c0 5.523-4.477 10-10 10S0 25.523 0 20s4.477-10 10-10zm10 8c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm40 40c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8z'/%3E%3C/g%3E%3C/svg%3E")`
-      }}
-    >
+    <div className="min-h-screen flex flex-col items-center justify-center p-8 relative overflow-hidden">
+      {/* Subtle Animated Background */}
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute top-1/4 left-1/3 w-[200vmax] h-[200vmax] bg-[radial-gradient(circle,rgba(0,0,0,0.02)_0%,transparent_70%)] animate-[pulse_40s_ease-in-out_infinite]"></div>
+        <div className="absolute top-2/3 left-2/5 w-[180vmax] h-[180vmax] bg-[radial-gradient(circle,rgba(0,0,0,0.015)_0%,transparent_65%)] animate-[pulse_35s_ease-in-out_infinite]"></div>
+        <div className="absolute top-1/3 left-3/4 w-[220vmax] h-[220vmax] bg-[radial-gradient(circle,rgba(0,0,0,0.025)_0%,transparent_75%)] animate-[pulse_45s_ease-in-out_infinite]"></div>
+      </div>
+      
+      <style jsx global>{`
+        @keyframes pulse {
+          0%, 100% {
+            transform: translate(0, 0) scale(1);
+            opacity: 0.3;
+          }
+          33% {
+            transform: translate(-5%, -3%) scale(1.02);
+            opacity: 0.4;
+          }
+          66% {
+            transform: translate(4%, 2%) scale(0.98);
+            opacity: 0.25;
+          }
+        }
+      `}</style>
+
       {/* Title in Top Left */}
       <div className="absolute top-8 left-8">
-        <h1 className="text-4xl font-light text-gray-900 tracking-tight">
+        <h1 className="text-3xl font-medium text-gray-900 tracking-tight">
           Timesheet
         </h1>
       </div>
 
       {/* Centered Login Card */}
       <div className="w-full max-w-md">
-        <Card className="shadow-[0_25px_60px_-15px_rgba(0,0,0,0.25)] border border-gray-300 rounded-xl bg-white/95 backdrop-blur-xl animate-scale-in">
-          {/* Date Header - Extended height and matching button color */}
-          <div className="w-full bg-gradient-to-r from-gray-900 to-black py-6 rounded-t-xl">
-            <div className="text-center text-white font-medium text-lg">
+        <Card className="shadow-[0_35px_60px_-15px_rgba(0,0,0,0.1)] border border-gray-100 rounded-xl bg-white/95 backdrop-blur-sm animate-fade-in">
+          {/* Date Header */}
+          <div className="w-full bg-gray-900 py-5 rounded-t-xl">
+            <div className="text-center text-gray-100 font-normal text-md tracking-wider">
               {currentDate}
             </div>
           </div>
           
           <CardContent className="px-8 py-10">
-            <form onSubmit={handleLogin} className="space-y-6">
-              <div className="space-y-3">
-                <Label htmlFor="username" className="text-sm font-medium text-gray-700">
+            <form onSubmit={handleLogin} className="space-y-8">
+              <div className="space-y-4">
+                <Label 
+                  htmlFor="username" 
+                  className="text-xs font-medium text-gray-600 tracking-wide uppercase"
+                >
                   Username or email address
                 </Label>
                 <Input
@@ -70,13 +92,16 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="h-12 rounded-lg border-gray-300 focus:border-gray-500 focus:ring-gray-500 transition-all duration-200"
+                  className="h-14 rounded-xl border-gray-200 focus:ring-2 focus:ring-gray-300 focus:border-transparent transition-all duration-300 px-4 text-gray-800"
                   placeholder="Enter your username or email"
                 />
               </div>
               
-              <div className="space-y-3">
-                <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+              <div className="space-y-4">
+                <Label 
+                  htmlFor="password" 
+                  className="text-xs font-medium text-gray-600 tracking-wide uppercase"
+                >
                   Password
                 </Label>
                 <Input
@@ -84,14 +109,14 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="h-12 rounded-lg border-gray-300 focus:border-gray-500 focus:ring-gray-500 transition-all duration-200"
+                  className="h-14 rounded-xl border-gray-200 focus:ring-2 focus:ring-gray-300 focus:border-transparent transition-all duration-300 px-4 text-gray-800"
                   placeholder="Enter your password"
                 />
               </div>
 
               <Button
                 type="submit"
-                className="w-full h-12 bg-gradient-to-r from-gray-900 to-black hover:from-gray-800 hover:to-gray-900 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
+                className="w-full h-14 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-xl shadow-sm transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 focus:scale-[0.98]"
               >
                 Sign In
               </Button>
@@ -100,7 +125,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
         </Card>
 
         {/* Footer */}
-        <div className="text-center mt-8 text-gray-600 text-sm">
+        <div className="text-center mt-8 text-gray-500 text-sm tracking-wide">
           Enter username and password to continue
         </div>
       </div>
